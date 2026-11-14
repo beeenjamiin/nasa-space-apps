@@ -9,6 +9,7 @@ import {geologyTile} from './materials.js';
 import {CaveLighting} from './lighting.js';
 import {drawFixture,drawDiscovery} from './equipment-view.js';
 import {discoverySites} from './expedition.js';
+import {drawGameplayWorld} from './gameplay-view.js';
 import {TILE,UNIT,WIDTH,HEIGHT,BLOCK,hash,STATIONS} from './world.js';
 export async function loadArt(){const human=new Image();human.src='assets/pixel/humans/astro.png';await human.decode();return {human};}
 export {drawAvatar} from './human.js';
@@ -73,6 +74,7 @@ export class Renderer{
   if(sim.lastBoostAt!==undefined&&s.elapsed-sim.lastBoostAt<.22){for(let i=0;i<4;i++)rect(c,px+(p.facing>0?7:20),py+14+i*3,3,i%2?2:3,i%2?'#dc9a59':'#f0d49b');}
   if(sim.mining){const m=sim.mining,x=m.tx*TILE-cam.x,y=m.ty*TILE-cam.y,k=m.elapsed/m.needed;c.strokeStyle='#f4d99c';c.lineWidth=1;c.strokeRect(Math.round(x),Math.round(y),8,8);rect(c,x,y-4,8,2,'#152032');rect(c,x,y-4,Math.ceil(k*8),2,'#edc47e');rect(c,x+3,y+2,1,4,'#172333');if(k>.5)rect(c,x+2,y+4,4,1,'#172333');}
   this.particles.update(s.elapsed,sim);this.particles.draw(c,cam);
+  drawGameplayWorld(c,sim,cam,time);
   this.caveLighting.draw(c,this.width,this.height,sim,cam,dt);
   if(s.planet==='mars')for(let i=0;i<27;i++){const x=((hash(i,5)*this.width+time*(3+i%3))%this.width),y=hash(i,6)*this.height;rect(c,x,y,1,1,'rgba(219,171,129,.3)');}
   if(menu){c.fillStyle='rgba(5,8,10,.18)';c.fillRect(0,0,this.width,this.height);}

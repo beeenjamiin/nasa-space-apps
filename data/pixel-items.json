@@ -12,7 +12,8 @@
     "lamps": {"name":"Lámpara de exploración", "description":"Colócala en una cueva para iluminar el camino. Su batería es finita.", "placeable":true, "fixture":"lamp"},
     "beacons": {"name":"Baliza científica", "description":"Marca una ruta. Despliégala junto a un lugar estudiado en Marte.", "placeable":true, "fixture":"beacon"},
     "batteries": {"name":"Batería portátil", "description":"Devuelve hasta 18 energía. Fabricarla almacena 20: no crea energía gratis.", "use":true},
-    "repairKits": {"name":"Botiquín", "description":"Recupera hasta 30 salud. Usa materiales, agua y electricidad al fabricarse.", "use":true}
+    "repairKits": {"name":"Botiquín", "description":"Recupera hasta 30 salud. Usa materiales, agua y electricidad al fabricarse.", "use":true},
+    "rovers": {"name":"Rover marciano", "description":"Despliega en terreno exterior libre de Marte. E entra/sale; A/D conduce y espacio frena. Utiliza energía de la expedición.", "use":true}
   },
   "recipes": {
     "panel": {"name":"Panel solar I", "output":"panels", "cost":{"regolith":4,"iron":2,"energy":5}},
@@ -23,7 +24,8 @@
     "battery": {"name":"Batería portátil", "output":"batteries", "cost":{"regolith":3,"iron":2,"energy":20}},
     "repair": {"name":"Botiquín", "output":"repairKits", "cost":{"regolith":4,"iron":2,"water":2,"energy":6}},
     "module": {"name":"Módulo de viaje a Marte", "flag":"module", "requires":"analyzed", "cost":{"regolith":12,"iron":4,"energy":20}},
-    "returnModule": {"name":"Módulo de regreso", "flag":"returnReady", "requires":"marsReport", "cost":{"regolith":16,"iron":6,"ice":2,"water":4,"energy":25}}
+    "returnModule": {"name":"Módulo de regreso", "flag":"returnReady", "requires":"marsReport", "cost":{"regolith":16,"iron":6,"ice":2,"water":4,"energy":25}},
+    "rover": {"name":"Rover terrestre de Marte", "output":"rovers", "planet":"mars", "cost":{"regolith":12,"iron":8,"energy":18}}
   },
   "simulationNote":"Costes, producción y tiempos son parámetros educativos. El módulo de regreso agrupa suministros y procesos ficticios, no un sistema real de propulsión."
 }

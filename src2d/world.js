@@ -1,3 +1,4 @@
+import {materialForBlock,isPlacedBlock,validSavedBlock} from './block-materials.js';
 export const TILE=8,UNIT=16,WIDTH=640,HEIGHT=172,PLAYER_HEIGHT=34;
 export const BLOCK={AIR:0,DUST:1,ROCK:2,IRON:3,ICE:4,HULL:5,FLOOR:6};
 export const LEGACY_SEEDS={moon:71423,mars:99127};
@@ -20,7 +21,7 @@ export function surfaceAt(x,planet='moon',seed=LEGACY_SEEDS[planet],version=1){x
 }
 export class PixelWorld{
  constructor(planet='moon',edits={},options={}){
-  this.planet=planet;this.version=[2,3].includes(options.version)?options.version:1;this.seed=options.seed??LEGACY_SEEDS[planet];this.tiles=new Uint8Array(WIDTH*HEIGHT);this.edits={...edits};this.revision=0;this.dirtyChunks=new Set();
+  this.planet=planet;this.version=[2,3].includes(options.version)?options.version:1;this.seed=options.seed??LEGACY_SEEDS[planet];this.tiles=new Uint8Array(WIDTH*HEIGHT);this.edits={...edits};this.revision=0;this.dirtyChunks=new Set();this.placed=new Set();
   const phase=this.version>=2?hash(2,7,this.seed)*Math.PI*2:0;
   for(let x=0;x<WIDTH;x++){const top=this.surfaceAt(x);for(let y=top;y<HEIGHT;y++){let tile=y<top+6?BLOCK.DUST:BLOCK.ROCK;const n=hash(Math.floor(x/4),Math.floor(y/4),this.seed);if(this.version<3){if(y>top+8&&n>.84)tile=BLOCK.IRON;if(y>top+18&&n<.065)tile=BLOCK.ICE;}const cave=y>top+18&&y<HEIGHT-8&&Math.sin(x*.09+y*.065+phase)+Math.sin(x*.045-y*.14-phase*.7)>1.18;if(!cave)this.tiles[y*WIDTH+x]=tile;}}
   if(this.version===3)growVeins(this);
@@ -29,15 +30,16 @@ export class PixelWorld{
   for(let x=40;x<90;x++){this.tiles[50*WIDTH+x]=BLOCK.HULL;this.tiles[66*WIDTH+x]=BLOCK.FLOOR;}
   for(let y=51;y<60;y++){this.tiles[y*WIDTH+40]=BLOCK.HULL;this.tiles[y*WIDTH+89]=BLOCK.HULL;}
   // The left end is sealed; entry is a walkable right-side airlock, never a teleport.
-  for(const [key,value]of Object.entries(this.edits)){const index=Number(key);if(Number.isInteger(index)&&index>=0&&index<this.tiles.length&&value>=0&&value<=4&&!this.protected(index%WIDTH,Math.floor(index/WIDTH)))this.tiles[index]=value;}
+  for(const [key,value]of Object.entries(this.edits)){const index=Number(key);if(Number.isInteger(index)&&index>=0&&index<this.tiles.length&&validSavedBlock(value)&&!this.protected(index%WIDTH,Math.floor(index/WIDTH))){this.tiles[index]=value;if(isPlacedBlock(value))this.placed.add(index);}}
  }
  surfaceAt(x){return surfaceAt(x,this.planet,this.seed,this.version);}
  pointsOfInterest(){return pointsOfInterest(this.planet,this.seed,this.version);}
+ materialAt(x,y){return materialForBlock(this.get(x,y),this.planet);}
  get(x,y){if(x<0||x>=WIDTH||y>=HEIGHT)return BLOCK.ROCK;if(y<0)return BLOCK.AIR;return this.tiles[y*WIDTH+x];}
  protected(x,y){const mx=x/2,my=y/2;return(mx>=19&&mx<=45&&my>=24&&my<=34)||(mx>=14&&mx<=18&&my>=32&&my<=34)||([47,50,53].some(tx=>Math.abs(mx-tx)<=1)&&my>=30&&my<=35)||(this.protectedSites||[]).some(p=>Math.abs(x-p.x)<=2&&y>=p.y&&y<=p.y+2);}
  groundY(px){const x=Math.max(0,Math.min(WIDTH-1,Math.floor(px/TILE)));this.supportCache??=new Map();if(this.supportRevision!==this.revision){this.supportCache.clear();this.supportRevision=this.revision;}if(this.supportCache.has(x))return this.supportCache.get(x);for(let y=0;y<HEIGHT;y++)if(this.get(x,y)){this.supportCache.set(x,y*TILE);return y*TILE;}return HEIGHT*TILE;}
 
- set(x,y,value){if(x<0||x>=WIDTH||y<0||y>=HEIGHT||this.protected(x,y))return false;this.tiles[y*WIDTH+x]=value;this.edits[y*WIDTH+x]=value;this.revision++;for(const dx of[-1,0,1])for(const dy of[-1,0,1])this.dirtyChunks.add(Math.floor((x+dx)/16)+','+Math.floor((y+dy)/16));return true;}
+ set(x,y,value){if(!Number.isInteger(x)||!Number.isInteger(y)||!validSavedBlock(value)||x<0||x>=WIDTH||y<0||y>=HEIGHT||this.protected(x,y))return false;const index=y*WIDTH+x;this.tiles[index]=value;this.edits[index]=value;if(isPlacedBlock(value))this.placed.add(index);else this.placed.delete(index);this.revision++;for(const dx of[-1,0,1])for(const dy of[-1,0,1])this.dirtyChunks.add(Math.floor((x+dx)/16)+','+Math.floor((y+dy)/16));return true;}
  solidAt(px,py){return this.get(Math.floor(px/TILE),Math.floor(py/TILE))!==0;}
  inside(player){return player.x>21*UNIT&&player.x<44*UNIT&&player.y>25*UNIT&&player.y<34*UNIT;}
  collides(x,y,w=12,h=PLAYER_HEIGHT){for(let ty=Math.floor(y/TILE);ty<=Math.floor((y+h-.01)/TILE);ty++)for(let tx=Math.floor(x/TILE);tx<=Math.floor((x+w-.01)/TILE);tx++)if(this.get(tx,ty))return true;return false;}

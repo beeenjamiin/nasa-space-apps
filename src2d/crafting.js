@@ -1,18 +1,21 @@
 import catalog from '../data/pixel-items.json' with {type:'json'};
 import config from '../data/pixel-config.json' with {type:'json'};
 import {TILE,UNIT,PLAYER_HEIGHT,BLOCK} from './world.js';
+import {reconcileMaterials} from './block-materials.js';
+import {deployRover} from './vehicles.js';
 export const ITEMS=catalog.items,RECIPES=catalog.recipes;
 export const PANEL_POWER=config.power.panelRates;
 export function costText(cost){return Object.entries(cost).map(([key,n])=>`${n} ${ITEMS[key]?.name.toLowerCase()||({energy:'energía',water:'agua'}[key]||key)}`).join(' · ');}
 export function craftItem(sim,id){
  const s=sim.s,p=s.player,recipe=RECIPES[id];
  if(!recipe)return{ok:false,text:'Receta no disponible.'};
+ if(recipe.planet&&recipe.planet!==s.planet)return{ok:false,text:'Este vehículo se fabrica al llegar a Marte.'};
  if(s.resources.health<=0||!sim.world.inside(p)||Math.hypot(p.x-35*UNIT,p.y-(33*UNIT-PLAYER_HEIGHT))>64)return{ok:false,text:'Acércate al banco de fabricación dentro de la base.'};
  if(recipe.requires&&!s.flags[recipe.requires])return{ok:false,text:recipe.requires==='marsReport'?'Completa el informe de los tres descubrimientos marcianos.':recipe.requires==='marsAnalyzed'?'Primero analiza una muestra marciana.':'Primero analiza las tres muestras lunares.'};
  if(recipe.flag&&s.flags[recipe.flag])return{ok:false,text:'Este módulo ya está instalado.'};
  if(recipe.output&&s.inventory[recipe.output]>=24)return{ok:false,text:'Ya tienes suficientes unidades de este objeto en la mochila.'};
  for(const[key,n]of Object.entries(recipe.cost))if((key in s.resources?s.resources[key]:s.inventory[key])<n)return{ok:false,text:'Necesitas '+costText(recipe.cost)+'.'};
- for(const[key,n]of Object.entries(recipe.cost))if(key in s.resources)s.resources[key]-=n;else s.inventory[key]-=n;
+ reconcileMaterials(s);for(const[key,n]of Object.entries(recipe.cost))if(key in s.resources)s.resources[key]-=n;else s.inventory[key]-=n;reconcileMaterials(s);
  if(recipe.flag)s.flags[recipe.flag]=true;else s.inventory[recipe.output]++;
  const text=recipe.output?`${recipe.name} fabricado. Está en la mochila: ${ITEMS[recipe.output].placeable?'elige COLOCAR y decide dónde desplegarlo.':'puedes utilizarlo cuando lo necesites.'}`:`${recipe.name} instalado en la nave.`;
  sim.tell(text);return{ok:true,text};
@@ -57,6 +60,7 @@ export function placeCrafted(sim,id,x,y){
 }
 export function useItem(sim,id){
  const s=sim.s;if(s.resources.health<=0||!s.inventory[id])return{ok:false,text:'No tienes ese objeto disponible.'};
+ if(id==='rovers'){const result=deployRover(sim);if(result.ok)sim.tell(result.text);return result;}
  if(id==='rations')return{ok:sim.eat(),text:'Ración utilizada si faltaba nutrición o salud.'};
  const key=id==='batteries'?'energy':id==='repairKits'?'health':null;
  if(!key||s.resources[key]>=100)return{ok:false,text:'Esa reserva ya está completa.'};
