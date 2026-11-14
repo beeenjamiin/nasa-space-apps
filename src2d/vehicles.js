@@ -1,6 +1,6 @@
 import config from '../data/pixel-config.json' with {type:'json'};
 import {TILE,UNIT,WIDTH,HEIGHT,PLAYER_HEIGHT} from './world.js';
-export const ROVER=Object.freeze({width:48,height:24,maxSpeed:100,acceleration:70,braking:130,coast:35,power:.045,maxPerPlanet:3});
+export const ROVER=Object.freeze({width:48,height:24,maxSpeed:125,acceleration:85,braking:130,coast:35,power:.045,maxPerPlanet:3});
 const overlaps=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export function roverBounds(v){return{x:v.x,y:v.y,width:ROVER.width,height:ROVER.height};}
 export function drivingVehicle(sim){return sim.s.vehicles.find(v=>v.id===sim.s.driving&&v.planet===sim.s.planet)||null;}

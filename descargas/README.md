@@ -1,43 +1,13 @@
-# Descargar Órbita: Frontera 2D
+# Descargar Órbita: Frontera — Astronautas Junior
 
-## [⬇ DESCARGAR EL ZIP COMPLETO](https://github.com/beeenjamiin/nasa-space-apps/raw/refs/heads/release/orbita-frontera-2d/descargas/orbita-frontera-2d.zip)
+## [Descargar ZIP completo](https://github.com/beeenjamiin/nasa-space-apps/raw/refs/heads/main/descargas/orbita-frontera-2d.zip)
 
-**713 KB · 84 archivos · juego compilado, fuentes, instrucciones y capturas.**
+Juego 2D compilado, código fuente, recursos, pruebas, documentación y capturas de validación. Si GitHub muestra el archivo, usa **Download raw file**.
 
-Si GitHub muestra una vista del archivo ZIP, pulsa **Download raw file**
-(el icono de descarga). No necesitas descargar archivos uno por uno.
+Extrae el ZIP y ejecuta `INICIAR.bat` o `python3 INICIAR.py`. Para desarrollar: Node 24, `npm ci`, `npm test`, `npm run build`. Consulta `README.md` dentro del paquete.
 
-### Jugar
+La rama `main` integra las ramas de jugabilidad y lanzamiento y la experiencia junior: entrenamiento, rover, materiales con origen, puentes que colapsan, mochila/taller/bitácora independientes, español e inglés, joystick, medallas, avisos, polvo marciano y regreso a la Tierra.
 
-1. Descarga y extrae el ZIP completo.
-2. Con Python 3 instalado, ejecuta **INICIAR.bat** en Windows o
-   **python3 INICIAR.py** en Linux/macOS.
-3. El lanzador abre el juego en el navegador. También puedes servir la carpeta con
-   Live Server o subirla a un hosting estático. No abrir con `file://`.
+Validación: **87 pruebas de Node y 283 comprobaciones en Chromium**, sin errores JavaScript en ese recorrido. El ZIP se extrae, instala con `npm ci` y recompila; el resultado coincide byte a byte con el juego incluido. Las comprobaciones móviles usan emulación; los escenarios de tormenta usan estados de prueba explícitos. El recorrido físico de campaña se valida en la simulación en cuatro mapas.
 
-### Contenido de esta entrega
-
-- Campaña 2D Luna → Marte → regreso a la Tierra.
-- Rover marciano fabricable y conducible.
-- Materiales que conservan su procedencia entre planetas.
-- Estabilidad estructural, colapsos y daño por impacto.
-- Mapa con selección de destino, selector de materiales y avisos del HUD.
-- Controles de teclado y táctiles.
-
-### Validación ejecutada
-
-- **79/79 pruebas del proyecto aprobadas.**
-- **46/46 comprobaciones en Chromium aprobadas**, con escritorio y móvil emulado.
-- Sin errores de ejecución ni de consola en esas comprobaciones.
-- ZIP extraído y probado de nuevo; la recompilación coincide con los archivos
-  compilados incluidos.
-
-Las comprobaciones de interfaz en Marte usan recursos y posiciones de prueba;
-el recorrido natural de campaña se verifica en la suite de Node. Los resultados
-y las capturas están dentro de `validacion/` en el ZIP.
-
-[Ver código de la entrega](https://github.com/beeenjamiin/nasa-space-apps/tree/release/orbita-frontera-2d)
-· [SHA-256 del ZIP](./orbita-frontera-2d.zip.sha256)
-
-Esta entrega está en `release/orbita-frontera-2d`. La rama `main` permanece en su
-versión anterior hasta que se integre mediante revisión.
+[Código en main](https://github.com/beeenjamiin/nasa-space-apps/tree/main) · [SHA-256 del ZIP](orbita-frontera-2d.zip.sha256) · [Cambios](../CAMBIOS-JUNIOR.md)

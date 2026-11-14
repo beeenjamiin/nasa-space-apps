@@ -1,3 +1,5 @@
+import {translate} from './language.js';
+import {dustPhase} from './junior-mission.js';
 import {drawFacade,drawHabitatAccents} from './habitat.js';
 import {treeSprite,rockSprite} from './decor.js';
 import {drawAvatar} from './human.js';
@@ -41,7 +43,7 @@ export class Renderer{
   rect(c,-8,-65,16,3,ink);rect(c,-13,-62,26,5,ink);rect(c,-16,-57,32,28,ink);rect(c,-12,-59,24,28,'#c1c4b2');rect(c,-8,-62,16,4,'#ece7cd');rect(c,-14,-54,2,21,'#777f82');rect(c,11,-54,2,20,'#777f82');rect(c,-8,-54,17,16,ink);rect(c,-6,-52,13,12,'#577c8b');rect(c,-5,-51,4,8,'#adc3bd');rect(c,-12,-34,24,5,'#838e86');
   rect(c,-19,-30,38,20,ink);rect(c,-17,-28,34,16,'#ac865b');rect(c,-15,-26,30,4,'#ddc08a');for(let i=0;i<5;i++){rect(c,-14+i*6,-22,2,9,'#735b4e');rect(c,-11+i*6,-19,2,2,'#e4ca92');}rect(c,-7,-14,14,9,ink);rect(c,-5,-12,10,5,'#5b6464');
   for(const side of[-1,1]){for(let k=0;k<4;k++){rect(c,side*(16+k*3)-(side>0?0:3),-22+k*4,4,6,ink);rect(c,side*(16+k*3)-(side>0?0:3)+1,-21+k*4,2,4,'#9fa68e');}rect(c,side*28-8,-5,16,4,ink);rect(c,side*28-6,-4,12,2,'#c2bf9e');}rect(c,17,-66,2,34,ink);rect(c,15,-67,6,2,'#c8c8ae');rect(c,16,-69,4,2,'#d4ad69');c.restore();}
- launcher(x,y){const c=this.ctx;c.save();c.translate(Math.round(x),Math.round(y));const ink='#141720';rect(c,-4,-109,8,6,ink);rect(c,-7,-103,14,7,ink);rect(c,-10,-96,20,77,ink);rect(c,-8,-96,16,74,'#dddcc5');rect(c,-6,-100,12,5,'#dddcc5');rect(c,-3,-106,6,6,'#ece7cc');rect(c,4,-91,3,62,'#a6afa8');for(const yy of[-83,-64,-43]){rect(c,-9,yy,18,6,ink);rect(c,-7,yy+1,14,3,'#656e70');}rect(c,-5,-92,10,7,ink);rect(c,-3,-91,6,4,'#7ea1a5');for(const side of[-1,1]){rect(c,side*13-4,-58,8,42,ink);rect(c,side*13-2,-56,4,38,'#b6b7a6');rect(c,side*13-3,-18,6,8,ink);}rect(c,-8,-23,16,12,ink);rect(c,-5,-19,10,11,'#626564');c.restore();}
+ launcher(x,y,boosterOnly=false){const c=this.ctx;c.save();c.translate(Math.round(x),Math.round(y));if(boosterOnly){c.beginPath();c.rect(-30,-84,60,90);c.clip();}const ink='#141720';rect(c,-4,-109,8,6,ink);rect(c,-7,-103,14,7,ink);rect(c,-10,-96,20,77,ink);rect(c,-8,-96,16,74,'#dddcc5');rect(c,-6,-100,12,5,'#dddcc5');rect(c,-3,-106,6,6,'#ece7cc');rect(c,4,-91,3,62,'#a6afa8');for(const yy of[-83,-64,-43]){rect(c,-9,yy,18,6,ink);rect(c,-7,yy+1,14,3,'#656e70');}rect(c,-5,-92,10,7,ink);rect(c,-3,-91,6,4,'#7ea1a5');for(const side of[-1,1]){rect(c,side*13-4,-58,8,42,ink);rect(c,side*13-2,-56,4,38,'#b6b7a6');rect(c,side*13-3,-18,6,8,ink);}rect(c,-8,-23,16,12,ink);rect(c,-5,-19,10,11,'#626564');for(let n=0;n<7;n++){rect(c,-7,-85+n*8,13,1,'#b6bdb4');rect(c,-7,-84+n*8,2,5,'#ecebdd');}rect(c,-4,-76,6,4,'#cc875c');rect(c,6,-72,1,44,'#6b8589');for(const dx of[-12,0,12]){rect(c,dx-3,-13,6,4,'#89958e');rect(c,dx-4,-9,8,3,'#333e4a');}c.restore();}
 
  base(s){const c=this.ctx,x=20*UNIT-this.cam.x,y=25*UNIT-this.cam.y,w=25*UNIT,h=8*UNIT,active=s.planet==='moon'?s.flags.baseOnline:s.flags.marsOnline;
   rect(c,x,y,w,h,'#283335');rect(c,x+3,y+4,w-6,h-8,'#4b5957');for(let n=0;n<12;n++){const px=x+10+n*32;rect(c,px,y+12,28,85,'#66716a');rect(c,px+2,y+14,24,1,'#889187');rect(c,px+2,y+95,24,1,'#394844');}
@@ -58,7 +60,7 @@ export class Renderer{
   const eva=42*UNIT-this.cam.x;rect(c,eva-9,y+58,20,59,'#263b42');rect(c,eva-7,y+60,16,54,'#82958b');rect(c,eva-3,y+64,8,9,s.equipment.suited?'#354f5a':'#cfddcc');rect(c,eva-4,y+76,10,20,s.equipment.suited?'#4f6968':'#bdcbbb');this.label('EVA',eva+1,y+54,'#dfdcc2',6);
   drawHabitatAccents(c,x,y,active);for(const edge of[20,44]){const doorX=edge*UNIT-this.cam.x,near=Math.abs(s.player.x-edge*UNIT)<42;rect(c,doorX-3,y+77,22,4,'#b5bcae');rect(c,doorX-3,y+79,3,49,'#e0dfca');rect(c,doorX+16,y+79,3,49,'#e0dfca');if(!near){rect(c,doorX,y+99,16,29,'#596f6a');rect(c,doorX+2,y+101,12,24,'#75928a');}rect(c,doorX-2,y+84,1,9,near?'#a2c68d':'#d1ad70');}
  }
- label(text,x,y,color='#dadcc8',size=8){const c=this.ctx;c.fillStyle=color;c.font=`${size}px Silkscreen, monospace`;c.textAlign='center';c.fillText(text,Math.round(x),Math.round(y));}
+ label(text,x,y,color='#dadcc8',size=8){const c=this.ctx;c.fillStyle=color;c.font=`${size}px Silkscreen, monospace`;c.textAlign='center';c.fillText(translate(text),Math.round(x),Math.round(y));}
  render(sim,time,{menu=false}={}){const s=sim.s,p=s.player,c=this.ctx;this.time=time;const targetX=Math.max(0,Math.min(WIDTH*TILE-this.width,p.x-this.width*.45)),targetY=Math.max(0,Math.min(HEIGHT*TILE-this.height,p.y-this.height*.6));this.cam.x=targetX;this.cam.y=targetY;this.sky(s.planet,this.cam,time);const inside=sim.world.inside(p),dt=Math.min(.1,Math.max(0,time-(this.lastRenderTime??time)));this.lastRenderTime=time;if(this.facadeWorld!==sim.world){this.facadeWorld=sim.world;this.facadeOpacity=inside?0:1;}else{const target=inside?0:1,step=dt/.45;this.facadeOpacity=target>this.facadeOpacity?Math.min(1,this.facadeOpacity+step):Math.max(0,this.facadeOpacity-step);}this.base(s);this.terrain(sim.world);
   drawFacade(c,20*UNIT-this.cam.x,25*UNIT-this.cam.y,this.facadeOpacity);const cam=this.cam,solar=s.planet==='moon'?s.flags.solarOnline:s.flags.marsOnline;this.solarLayouts=[];for(const panel of[{x:47*UNIT,tier:1},{x:50*UNIT,tier:1},{x:53*UNIT,tier:1},...s.solarPanels.filter(a=>a.planet===s.planet)]){const px=panel.x,samples=Array.from({length:11},(_,i)=>sim.world.groundY(px-8+i*4)),plane=Math.min(...samples),supports=[sim.world.groundY(px+10),sim.world.groundY(px+25)];this.solarLayouts.push({x:px,plane,supports,tier:panel.tier||1});this.solar(px-cam.x,plane-cam.y,solar,supports.map(y=>y-cam.y),panel.tier||1);}
   for(const f of s.fixtures)if(f.planet===s.planet&&f.x>cam.x-30&&f.x<cam.x+this.width+30)drawFixture(c,f,cam,time);
@@ -73,11 +75,15 @@ export class Renderer{
 
   if(sim.lastBoostAt!==undefined&&s.elapsed-sim.lastBoostAt<.22){for(let i=0;i<4;i++)rect(c,px+(p.facing>0?7:20),py+14+i*3,3,i%2?2:3,i%2?'#dc9a59':'#f0d49b');}
   if(sim.mining){const m=sim.mining,x=m.tx*TILE-cam.x,y=m.ty*TILE-cam.y,k=m.elapsed/m.needed;c.strokeStyle='#f4d99c';c.lineWidth=1;c.strokeRect(Math.round(x),Math.round(y),8,8);rect(c,x,y-4,8,2,'#152032');rect(c,x,y-4,Math.ceil(k*8),2,'#edc47e');rect(c,x+3,y+2,1,4,'#172333');if(k>.5)rect(c,x+2,y+4,4,1,'#172333');}
-  if(this.blockPlacementPreview){const b=this.blockPlacementPreview;c.save();c.strokeStyle=b.ok?'#b8d8a2':'#e4a18a';c.lineWidth=1;c.strokeRect(Math.round(b.tx*TILE-cam.x),Math.round(b.ty*TILE-cam.y),TILE,TILE);c.restore();}
+  if(this.blockPlacementPreview){const b=this.blockPlacementPreview;c.save();c.strokeStyle=b.ok?(b.stable?'#b8d8a2':'#efbc6b'):'#e4a18a';c.lineWidth=1;c.strokeRect(Math.round(b.tx*TILE-cam.x),Math.round(b.ty*TILE-cam.y),TILE,TILE);c.restore();}
   this.particles.update(s.elapsed,sim);this.particles.draw(c,cam);
   drawGameplayWorld(c,sim,cam,time);
   this.caveLighting.draw(c,this.width,this.height,sim,cam,dt);
   if(s.planet==='mars')for(let i=0;i<27;i++){const x=((hash(i,5)*this.width+time*(3+i%3))%this.width),y=hash(i,6)*this.height;rect(c,x,y,1,1,'rgba(219,171,129,.3)');}
+  if(s.planet==='mars'&&s.junior&&dustPhase(s.junior.dustClock)==='active'){
+   c.fillStyle=inside?'rgba(154,97,60,.08)':'rgba(154,97,60,.32)';c.fillRect(0,0,this.width,this.height);
+   if(!inside)for(let i=0;i<70;i++){const x=(hash(i,8)*this.width+time*24)%(this.width+10),y=hash(i,19)*this.height;rect(c,x,y,2+i%3,1,'rgba(231,185,131,.5)');}
+  }
   if(menu){c.fillStyle='rgba(5,8,10,.18)';c.fillRect(0,0,this.width,this.height);}
  }
  cinematic(profile,time,type='moon'){this.cinema.draw(profile,time,type);}

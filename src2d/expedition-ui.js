@@ -23,7 +23,7 @@ export class ExpeditionUI{
  toggleMap(){if(this.mapOpen)this.closeMap();else this.openMap();}
  openMap(){
   if(!this.isPlaying())return;this.refresh();this.clearControls();this.save();$('inventory-panel').classList.add('hidden');
-  this.mapOpen=true;this.getSim().openMap();const dialog=$('map-dialog');
+  document.querySelectorAll('.junior-panel').forEach(p=>p.classList.add('hidden'));this.mapOpen=true;this.getSim().openMap();const dialog=$('map-dialog');
   if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');
   this.drawMap();$('close-map').focus();
  }
@@ -72,7 +72,7 @@ export class ExpeditionUI{
   }
   for(const p of view.markers){
    c.fillStyle=p.type==='base'?'#a9d8a5':p.type==='ship'?'#f3da8a':p.type==='vehicle'?'#d0c1e7':p.collected||p.visited?'#82908c':'#7bd3dd';
-   const size=p.type==='station'?3:6;c.fillRect(Math.round(p.mapX*scale-size/2),Math.round(p.mapY*scale-size/2),size,size);
+   const size=p.type==='station'?3:9;c.fillRect(Math.round(p.mapX*scale-size/2),Math.round(p.mapY*scale-size/2),size,size);if(['base','ship','vehicle'].includes(p.type)){c.font='12px sans-serif';c.fillText(({base:'⌂',ship:'▲',vehicle:'●'}[p.type]),Math.max(0,p.mapX*scale-5),p.mapY*scale-12);}
   }
   if(view.waypoint){c.strokeStyle='#f3ae88';c.lineWidth=2;const x=view.waypoint.mapX*scale,y=view.waypoint.mapY*scale;c.strokeRect(x-5,y-5,10,10);}
   c.fillStyle='#ffffff';const px=Math.round(view.player.mapX*scale),py=Math.round(view.player.mapY*scale);c.fillRect(px-2,py-6,4,12);c.fillRect(px-6,py-2,12,4);

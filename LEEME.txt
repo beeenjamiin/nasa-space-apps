@@ -1,17 +1,17 @@
-ÓRBITA: FRONTERA / VERSIÓN 5
+ÓRBITA: FRONTERA / VERSIÓN 6 · ASTRONAUTAS JUNIOR
 
-DESPLEGAR: descomprimir y subir el contenido a un hosting estático. index.html está en la raíz; el juego compilado no requiere npm ni backend. En local usar Live Server o un servidor HTTP, no file://.
+JUGAR: extrae el ZIP completo. Con Python 3, abre INICIAR.bat en Windows o ejecuta python3 INICIAR.py en Linux/macOS. También puedes usar Live Server. No abras con file://.
 
-EDITAR Y PROBAR: Node 24 o posterior. Ejecutar npm install, npm test, npm run build. Después abrir index.html con Live Server o npm run preview. Este último puede descargar la herramienta serve. Las fuentes completas están en src2d/ y los JSON en data/. Editar la estructura en pixel.html; el build produce index.html y pixel-game.js. A diferencia de los ZIP anteriores, la v5 usa carpetas de proyecto en la raíz y entrega las pruebas ejecutables.
+DESPLEGAR: sube index.html, pixel-game.js y las carpetas css/, assets/ y data/ a un hosting estático.
 
-CONTROLES: A/D para caminar, espacio para saltar, otro toque para impulso con coste, E para usar, T para cambiar traje dentro del hábitat, I para mochila, Escape para pausa o cancelar colocación. Mantener clic o F para picar; clic derecho/B coloca regolito. Elegir COLOCAR en un objeto fabricado activa su previsualización; clic/B o un toque en el mundo lo instala. En celular también se puede usar el botón contextual para el punto frontal.
+DESARROLLAR: Node 24 o posterior. npm ci, npm test, npm run build, npm run preview. Edita src2d/, data/, css/ y pixel.html; no edites pixel-game.js.
 
-NUEVO: nombres al pasar por el inventario; paneles I/II/III que se llevan y colocan manualmente; lámparas, balizas, baterías y botiquines; ropa de tripulación sin casco; piedra y vetas mejoradas; oscuridad progresiva; más ciencia en Marte y regreso a la Tierra con informe final. El regreso es el cierre de la campaña, no un mundo terrestre abierto.
+CONTROLES: A/D caminar, espacio saltar, E usar, T traje, I/Tab mochila, C taller, J bitácora, M mapa, H indicadores. Mantén clic/F para picar. Clic derecho/B para construir. Celular: joystick izquierdo y botones de acción.
 
-GUARDADO: las partidas antiguas conservan sus mapas y excavaciones. Las vetas ramificadas del generador 3 aparecen en expediciones nuevas. Semilla, traje, objetos, descubrimientos y mejoras se guardan en este navegador/origen; cambiar de hosting no transfiere el progreso automáticamente.
+CAMPAÑA: entrenamiento en Tierra, base lunar, investigación, preparación del viaje, rover y descubrimientos en Marte y regreso a la Tierra. El viaje de regreso cierra la campaña; no es un mundo terrestre abierto.
 
-CIENCIA: las tasas, mapas, recetas, cargas y tiempos son parámetros educativos. El aviso solar es un simulacro, no información actual de DONKI. Los descubrimientos se explican con fuentes NASA, pero no son mediciones de estos lugares ficticios. El regreso humano de Marte es una misión futura imaginada.
+IDIOMA: Español/English en inicio y pausa. La preferencia y la partida se guardan en este navegador.
 
-ARTE: Astro/Ragde/CC0 y fuente Silkscreen/SIL OFL con licencias incluidas. Los archivos Kenney históricos se conservan para verificar sus bytes/licencias en las pruebas; el personaje jugable utiliza Astro. No se incluyen recursos de Terraria ni credenciales ni datos de partidas.
+CIENCIA: enlaces NASA en la bitácora. Mapas, tiempos, recetas, tormentas y reservas son parámetros ficticios del juego, no telemetría ni alertas actuales.
 
-Ver LEEME-DESARROLLO.md para módulos, costes, controles y pruebas. El enlace al simulador 3D abre la versión publicada por separado; este ZIP contiene la aventura 2D.
+Consulta README.md, CAMBIOS-JUNIOR.md y LEEME-EXPORTACION.md. Licencias incluidas en assets/.

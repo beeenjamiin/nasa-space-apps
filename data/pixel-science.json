@@ -183,6 +183,28 @@
         "hielo del subsuelo como recurso potencial y cartografía con observaciones orbitales"
       ],
       "note": "No se importan mapas SWIM. Lugar, cantidad y profundidad del hielo jugable son parámetros ficticios."
+    },
+    {
+      "id": "astronaut-training",
+      "title": "NASA: Become an Astronaut",
+      "url": "https://www.nasa.gov/humans-in-space/astronauts/become-an-astronaut/",
+      "organization": "NASA",
+      "classification": "referencia_oficial_educativa",
+      "supports": [
+        "entrenamiento, trabajo en equipo y comunicación"
+      ]
+    },
+    {
+      "id": "mars-dust",
+      "title": "NASA: The Fact and Fiction of Martian Dust Storms",
+      "url": "https://www.nasa.gov/solar-system/the-fact-and-fiction-of-martian-dust-storms/",
+      "organization": "NASA",
+      "classification": "referencia_oficial_educativa",
+      "supports": [
+        "polvo atmosférico reduce luz disponible para paneles solares",
+        "atmósfera tenue limita la fuerza del viento"
+      ],
+      "note": "La duración, frecuencia, pérdida de generación y daño por energía agotada son parámetros de juego; no se importa meteorología actual."
     }
   ],
   "verifiedFacts": [
@@ -282,6 +304,22 @@
       "value": "la baja gravedad y la ausencia de atmósfera afectan el polvo levantado por motores",
       "childMessage": "En la Tierra el humo se mezcla con aire; en la Luna los granos de polvo vuelven al suelo por la gravedad.",
       "designConstraint": "No dibujar humo atmosférico ascendente sobre la Luna. El escape del motor sí existe en vacío."
+    },
+    {
+      "id": "training",
+      "classification": "hecho_cientifico_verificado",
+      "sourceIds": [
+        "astronaut-training"
+      ],
+      "childMessage": "Los astronautas entrenan antes de viajar. Aprenden a comunicarse, trabajar juntos y resolver problemas."
+    },
+    {
+      "id": "dust",
+      "classification": "relacion_fisica_con_parametros_de_simulacion",
+      "sourceIds": [
+        "mars-dust"
+      ],
+      "childMessage": "En Marte, el polvo tapa parte de la luz del Sol. Tus paneles reciben menos luz y producen menos electricidad. Regresa a la base para cuidar tu equipo."
     }
   ],
   "simulationParameters": {

@@ -1,31 +1,175 @@
 {
   "items": {
-    "pick": {"name":"Pico", "description":"Mantén pulsado para extraer. Mejora sus cuatro niveles en el banco."},
-    "regolith": {"name":"Regolito", "description":"Fragmentos de suelo. Sirven para construir bloques y fabricar anclajes."},
-    "iron": {"name":"Mineral de hierro", "description":"Material de fabricación; su procesamiento se simplifica en el taller."},
-    "ice": {"name":"Hielo", "description":"Procesa una unidad con electricidad para recuperar agua."},
-    "samples": {"name":"Muestras científicas", "description":"Llévalas al laboratorio: investigar consume agua y energía."},
-    "rations": {"name":"Ración", "description":"Nutrición +30 y salud hasta +25. Se consume al utilizarla.", "use":true},
-    "panels": {"name":"Panel solar I", "description":"Colocación manual en suelo exterior. Produce 0,045 energía/s de juego.", "placeable":true, "tier":1},
-    "panel2": {"name":"Panel solar II", "description":"Más producción por instalación: 0,075 energía/s. Requiere investigación lunar.", "placeable":true, "tier":2},
-    "panel3": {"name":"Panel solar III", "description":"Panel avanzado: 0,115 energía/s. Requiere análisis marciano.", "placeable":true, "tier":3},
-    "lamps": {"name":"Lámpara de exploración", "description":"Colócala en una cueva para iluminar el camino. Su batería es finita.", "placeable":true, "fixture":"lamp"},
-    "beacons": {"name":"Baliza científica", "description":"Marca una ruta. Despliégala junto a un lugar estudiado en Marte.", "placeable":true, "fixture":"beacon"},
-    "batteries": {"name":"Batería portátil", "description":"Devuelve hasta 18 energía. Fabricarla almacena 20: no crea energía gratis.", "use":true},
-    "repairKits": {"name":"Botiquín", "description":"Recupera hasta 30 salud. Usa materiales, agua y electricidad al fabricarse.", "use":true},
-    "rovers": {"name":"Rover marciano", "description":"Despliega en terreno exterior libre de Marte. E entra/sale; A/D conduce y espacio frena. Utiliza energía de la expedición.", "use":true}
+    "pick": {
+      "name": "Pico",
+      "description": "Mantén pulsado para extraer. Mejora sus cuatro niveles en el banco."
+    },
+    "regolith": {
+      "name": "Regolito",
+      "description": "Polvo y trocitos de roca del suelo. Se llama regolito. Úsalo para construir y reparar."
+    },
+    "iron": {
+      "name": "Mineral de hierro",
+      "description": "Material de fabricación; su procesamiento se simplifica en el taller."
+    },
+    "ice": {
+      "name": "Hielo",
+      "description": "Procesa una unidad con electricidad para recuperar agua."
+    },
+    "samples": {
+      "name": "Rocas para investigar",
+      "description": "Son pequeños trozos de roca que recoges. Llévalos al laboratorio para descubrir cómo se formaron."
+    },
+    "rations": {
+      "name": "Ración",
+      "description": "Nutrición +30 y salud hasta +25. Se consume al utilizarla.",
+      "use": true
+    },
+    "panels": {
+      "name": "Panel solar I",
+      "description": "Convierte la luz del Sol en electricidad. Fabrícalo y elige dónde colocarlo.",
+      "placeable": true,
+      "tier": 1
+    },
+    "panel2": {
+      "name": "Panel solar II",
+      "description": "Produce más electricidad que el panel I. Primero estudia las rocas lunares.",
+      "placeable": true,
+      "tier": 2
+    },
+    "panel3": {
+      "name": "Panel solar III",
+      "description": "Nuestro panel más potente. Primero estudia una roca de Marte.",
+      "placeable": true,
+      "tier": 3
+    },
+    "lamps": {
+      "name": "Lámpara de exploración",
+      "description": "Colócala en una cueva para iluminar el camino. Su batería es finita.",
+      "placeable": true,
+      "fixture": "lamp"
+    },
+    "beacons": {
+      "name": "Baliza científica",
+      "description": "Una señal para recordar tu camino. Colócala cerca de un descubrimiento en Marte.",
+      "placeable": true,
+      "fixture": "beacon"
+    },
+    "batteries": {
+      "name": "Batería portátil",
+      "description": "Devuelve hasta 18 energía. Fabricarla almacena 20: no crea energía gratis.",
+      "use": true
+    },
+    "repairKits": {
+      "name": "Botiquín",
+      "description": "Recupera hasta 30 salud. Usa materiales, agua y electricidad al fabricarse.",
+      "use": true
+    },
+    "rovers": {
+      "name": "Rover marciano",
+      "description": "Un coche de exploración para Marte. Va más rápido que correr, pero necesita energía. Toca USAR para desplegarlo y E para subir.",
+      "use": true
+    }
   },
   "recipes": {
-    "panel": {"name":"Panel solar I", "output":"panels", "cost":{"regolith":4,"iron":2,"energy":5}},
-    "panel2": {"name":"Panel solar II", "output":"panel2", "requires":"analyzed", "cost":{"regolith":6,"iron":4,"energy":8}},
-    "panel3": {"name":"Panel solar III", "output":"panel3", "requires":"marsAnalyzed", "cost":{"regolith":10,"iron":6,"energy":12}},
-    "lamp": {"name":"Lámpara", "output":"lamps", "cost":{"regolith":3,"iron":1,"energy":6}},
-    "beacon": {"name":"Baliza científica", "output":"beacons", "cost":{"regolith":4,"iron":2,"energy":4}},
-    "battery": {"name":"Batería portátil", "output":"batteries", "cost":{"regolith":3,"iron":2,"energy":20}},
-    "repair": {"name":"Botiquín", "output":"repairKits", "cost":{"regolith":4,"iron":2,"water":2,"energy":6}},
-    "module": {"name":"Módulo de viaje a Marte", "flag":"module", "requires":"analyzed", "cost":{"regolith":12,"iron":4,"energy":20}},
-    "returnModule": {"name":"Módulo de regreso", "flag":"returnReady", "requires":"marsReport", "cost":{"regolith":16,"iron":6,"ice":2,"water":4,"energy":25}},
-    "rover": {"name":"Rover terrestre de Marte", "output":"rovers", "planet":"mars", "cost":{"regolith":12,"iron":8,"energy":18}}
+    "panel": {
+      "name": "Panel solar I",
+      "output": "panels",
+      "cost": {
+        "regolith": 4,
+        "iron": 2,
+        "energy": 5
+      }
+    },
+    "panel2": {
+      "name": "Panel solar II",
+      "output": "panel2",
+      "requires": "analyzed",
+      "cost": {
+        "regolith": 6,
+        "iron": 4,
+        "energy": 8
+      }
+    },
+    "panel3": {
+      "name": "Panel solar III",
+      "output": "panel3",
+      "requires": "marsAnalyzed",
+      "cost": {
+        "regolith": 10,
+        "iron": 6,
+        "energy": 12
+      }
+    },
+    "lamp": {
+      "name": "Lámpara",
+      "output": "lamps",
+      "cost": {
+        "regolith": 3,
+        "iron": 1,
+        "energy": 6
+      }
+    },
+    "beacon": {
+      "name": "Baliza científica",
+      "output": "beacons",
+      "cost": {
+        "regolith": 4,
+        "iron": 2,
+        "energy": 4
+      }
+    },
+    "battery": {
+      "name": "Batería portátil",
+      "output": "batteries",
+      "cost": {
+        "regolith": 3,
+        "iron": 2,
+        "energy": 20
+      }
+    },
+    "repair": {
+      "name": "Botiquín",
+      "output": "repairKits",
+      "cost": {
+        "regolith": 4,
+        "iron": 2,
+        "water": 2,
+        "energy": 6
+      }
+    },
+    "module": {
+      "name": "Módulo de viaje a Marte",
+      "flag": "module",
+      "requires": "analyzed",
+      "cost": {
+        "regolith": 16,
+        "iron": 6,
+        "energy": 25
+      }
+    },
+    "returnModule": {
+      "name": "Módulo de regreso",
+      "flag": "returnReady",
+      "requires": "marsReport",
+      "cost": {
+        "regolith": 16,
+        "iron": 6,
+        "ice": 2,
+        "water": 4,
+        "energy": 25
+      }
+    },
+    "rover": {
+      "name": "Rover de Marte",
+      "output": "rovers",
+      "planet": "mars",
+      "cost": {
+        "regolith": 12,
+        "iron": 8,
+        "energy": 18
+      }
+    }
   },
-  "simulationNote":"Costes, producción y tiempos son parámetros educativos. El módulo de regreso agrupa suministros y procesos ficticios, no un sistema real de propulsión."
+  "simulationNote": "Costes, producción y tiempos son parámetros educativos. El módulo de regreso agrupa suministros y procesos ficticios, no un sistema real de propulsión."
 }

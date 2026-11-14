@@ -10,8 +10,8 @@ export function analyzeStructure(world,addition=null){
  if(addition)cells.add(extra);
  const block=i=>i===extra?addition.block:world.tiles[i];
  const gravityFactor=world.planet==='moon'?3.71/1.62:1;
- const span=i=>Math.max(1,Math.floor(materialForBlock(block(i),world.planet).span*gravityFactor));
- const costs=new Map(),buckets=Array.from({length:10},()=>[]);
+ const span=i=>Math.max(1,Math.floor(materialForBlock(block(i),world.planet).span*gravityFactor+2));
+ const costs=new Map(),buckets=Array.from({length:20},()=>[]);
  for(const i of cells){const below=i+WIDTH;if(below<WIDTH*HEIGHT&&world.tiles[below]&&!cells.has(below)){costs.set(i,0);buckets[0].push(i);}}
  for(let cost=0;cost<buckets.length;cost++)for(let head=0;head<buckets[cost].length;head++){
   const i=buckets[cost][head];if(costs.get(i)!==cost)continue;

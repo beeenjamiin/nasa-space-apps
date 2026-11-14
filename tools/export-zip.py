@@ -19,16 +19,16 @@ if destination.exists() and not args.overwrite:
 destination.parent.mkdir(parents=True, exist_ok=True)
 prefix = 'orbita-frontera-2d/'
 files = {}
-for name in ['assets', 'css', 'data', 'src2d', 'tests', 'tools']:
+for name in ['assets', 'css', 'data', 'src2d', 'tests', 'tools', '.github', 'docs']:
     for path in (root/name).rglob('*'):
         if not path.is_file() or path.is_symlink() or not path.resolve().is_relative_to(root):
             continue
         rel = path.relative_to(root)
-        if any(part.startswith('.') or part in ['__pycache__', 'node_modules'] for part in rel.parts) or path.suffix in ['.pyc', '.pem', '.key', '.zip']:
+        if any((part.startswith('.') and part!='.github') or part in ['__pycache__', 'node_modules'] for part in rel.parts) or path.suffix in ['.pyc', '.pem', '.key', '.zip']:
             continue
         files[rel.as_posix()] = path.read_bytes()
 for path in root.iterdir():
-    if path.is_file() and not path.is_symlink() and (path.suffix=='.md' or path.name in ['index.html', 'pixel.html', 'pixel-game.js', 'package.json', 'package-lock.json', 'LEEME.txt', 'INICIAR.py', 'INICIAR.bat', 'iniciar.sh']):
+    if path.is_file() and not path.is_symlink() and (path.suffix=='.md' or path.name in ['index.html', 'pixel.html', 'pixel-game.js', 'package.json', 'package-lock.json', 'LEEME.txt', 'INICIAR.py', 'INICIAR.bat', 'iniciar.sh', '.gitignore']):
         files[path.name] = path.read_bytes()
 required = ['index.html', 'pixel-game.js', 'css/pixel.css', 'css/expedition.css', 'INICIAR.py', 'package-lock.json']
 for name in required:

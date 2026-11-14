@@ -1,5 +1,5 @@
 import config from '../data/pixel-config.json' with {type:'json'};
-export const FALL_TUNING=Object.freeze({safeSpeed:4.25,damagePerEnergy:3});
+export const FALL_TUNING=Object.freeze({safeSpeed:5,damagePerEnergy:1.2});
 /** Impact speed is in world pixels/s; damage uses specific kinetic energy (J/kg). */
 export function fallImpact(speed,planet){
  const gravity=config[planet].gravity,metersPerSecond=Math.max(0,speed)/config.pixelsPerMeter;

@@ -1,0 +1,49 @@
+{
+  "status": "passed",
+  "unitTests": {
+    "passed": 87,
+    "failed": 0,
+    "command": "npm test"
+  },
+  "browser": {
+    "checks": 283,
+    "errors": [],
+    "scope": "Real desktop and emulated touch browser. Mars resource fixtures; physical campaign is covered by Node tests.",
+    "viewports": [
+      [
+        1366,
+        850
+      ],
+      [
+        320,
+        740
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        844,
+        390
+      ]
+    ],
+    "script": "tools/junior-browser.py"
+  },
+  "renderSample": {
+    "frames": 60,
+    "medianMs": 16.700000000000728,
+    "p95Ms": 16.700000000000728,
+    "scope": "Headless Chromium desktop sample, not a device benchmark"
+  },
+  "limitations": [
+    "Android/iOS físicos no probados",
+    "No es un benchmark de GPU ni garantiza FPS en otros equipos",
+    "No hay telemetría NASA ni alertas meteorológicas actuales"
+  ],
+  "campaign": "Recorrido físico pagado y con minería en cuatro mapas; preparación nueva de Marte incluida en los tres mapas con semilla.",
+  "export": {
+    "cleanNpmCi": true,
+    "compiledFilesMatchByteForByte": true,
+    "includesSources": true
+  }
+}

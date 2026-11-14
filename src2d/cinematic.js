@@ -1,7 +1,7 @@
 import {drawAvatar} from './human.js';import {treeSprite,rockSprite} from './decor.js';import {planetSprite} from './planets.js';import {hash} from './world.js';
 import {drawEnginePlume,drawLandingDust,smokeSprite} from './effects.js';
 import {drawSpaceSky,drawSun} from './sky.js';
-export const MOON_TIMELINE=[['walk',0,3],['elevator',3,7],['bridge',7,10],['countdown',10,12],['launch',12,17],['orbit',17,23],['transfer',23,29],['landing',29,35]];
+export const MOON_TIMELINE=[['walk',0,3],['elevator',3,7],['bridge',7,10],['countdown',10,12],['launch',12,17],['separation',17,19],['orbit',19,23],['transfer',23,29],['landing',29,35]];
 const MARS_TIMELINE=[['launch',0,4],['orbit',4,9],['transfer',9,15],['landing',15,21]];
 export const EARTH_TIMELINE=[['launch',0,5],['orbit',5,9],['transfer',9,16],['reentry',16,21],['landing',21,26]];
 export const cinemaDuration=type=>type==='earth'?26:type==='mars'?21:35;
@@ -14,7 +14,7 @@ export class Cinematic{
  earthLandscape(time){const r=this.r,c=r.ctx,w=r.width,h=r.height,floor=h*.84;const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#5066e5');g.addColorStop(.65,'#6a9af0');g.addColorStop(1,'#b4cfe5');c.fillStyle=g;c.fillRect(0,0,w,h);
   drawSun(c,w*.17,h*.17,10,{atmosphere:true});
   // Soft color separation comes from discrete pixel clouds and distant mountain planes.
-  for(let i=0;i<7;i++){const x=(hash(i,4)*w+time*.8)%(w+90)-50,y=25+hash(i,8)*h*.21;c.drawImage(smokeSprite(i%4,3),Math.round(x),Math.round(y),58,25);}
+  for(let i=0;i<17;i++){const x=(hash(i,4)*w+time*.8)%(w+90)-50,y=25+hash(i,8)*h*.21;c.drawImage(smokeSprite(i%4,3),Math.round(x),Math.round(y),42+i%4*9,17+i%3*4);}
   for(let l=0;l<4;l++){c.beginPath();c.moveTo(0,floor);for(let x=0;x<=w+4;x+=3){const u=(x+l*71)/87,k=Math.floor(u),t=u-k,a=hash(k,l+11),b=hash(k+1,l+11),ridge=a+(b-a)*t;const yy=floor-37+l*13-ridge*(119-l*16);c.lineTo(x,Math.round(yy));}c.lineTo(w,floor);c.closePath();c.fillStyle=['#8cbed6','#6baabf','#498e9e','#377c79'][l];c.fill();}
   c.save();c.globalAlpha=.38;for(let i=0;i<15;i++){const tree=treeSprite(i%4),scale=.35+(i%3)*.1;c.drawImage(tree,Math.round(i*w/14-25),Math.round(floor-tree.height*scale),Math.round(tree.width*scale),Math.round(tree.height*scale));}c.restore();
   // Natural trees remain outside the launch exclusion area, never on the Moon.
@@ -47,21 +47,38 @@ export class Cinematic{
    r.label(phase==='walk'?'TIERRA / CENTRO DE LANZAMIENTO':phase==='elevator'?'ASCENSOR / ACCESO A LA TRIPULACIÓN':phase==='bridge'?'PASARELA / EMBARQUE':phase==='countdown'?'ESCOTILLA SELLADA / CUENTA ATRÁS':'DESPEGUE / PRIMERA ETAPA',w/2,24,'#fff0cd',9);return;
   }
   if(phase==='launch'){const floor=this.ground('moon',time),y=floor-t*t*(h+80);r.rocket(w/2,y);this.flame(w/2,y-7,time,.8,true);r.label('SALIDA LUNAR / NUEVA EXPEDICIÓN',w/2,25,'#e5dbbd',10);return;}
+  if(phase==='separation'){
+   this.stars(time);const cx=w*.52,cy=h*.4;
+   c.save();c.translate(cx-18-t*50,cy+75+t*70);c.rotate(-t*.22);r.launcher(0,0,true);c.restore();
+   this.capsule(cx+t*22,cy-t*20);rect(c,cx-10+t*22,cy+4-t*20,20,13,'#9aabac');rect(c,cx-7+t*22,cy+17-t*20,14,4,'#424b56');
+   r.label('SEPARACIÓN / CÁPSULA LIBRE · RUMBO A ÓRBITA',w/2,25,'#f2d9ab',9);return;
+  }
   if(phase==='orbit'){
    this.stars(time);const radius=Math.min(h*.28,w*.17,75),cx=w*.36,cy=h*.59,kind=earth?'earth':'moon';c.drawImage(planetSprite(kind),Math.round(cx-radius),Math.round(cy-radius),radius*2,radius*2);
-   const a=.3-t*2.7,rr=radius+47,x=cx+Math.cos(a)*rr,y=cy+Math.sin(a)*rr*.76;c.strokeStyle='#78889d';c.setLineDash([2,5]);c.beginPath();c.ellipse(cx,cy,rr,rr*.76,0,0,Math.PI*2);c.stroke();c.setLineDash([]);c.save();c.translate(x,y);c.rotate(-a+.6);r.rocket(0,0,true);this.flame(0,-6,time,.45,true);c.restore();r.label(earth?'ÓRBITA TERRESTRE / PREPARANDO TRANSFERENCIA':'ÓRBITA LUNAR / RUMBO A MARTE',w/2,25,'#e5dbbd',9);return;
+   const a=.3-t*2.7,rr=radius+47,x=cx+Math.cos(a)*rr,y=cy+Math.sin(a)*rr*.76;c.strokeStyle='#78889d';c.setLineDash([2,5]);c.beginPath();c.ellipse(cx,cy,rr,rr*.76,0,0,Math.PI*2);c.stroke();c.setLineDash([]);c.save();c.translate(x,y);c.rotate(-a+.6);if(earth){this.capsule(0,0);rect(c,-8,5,16,14,'#9cacac');}else r.rocket(0,0,true);this.flame(0,20,time,.45,true);c.restore();r.label(earth?'ÓRBITA TERRESTRE / PREPARANDO TRANSFERENCIA':'ÓRBITA LUNAR / RUMBO A MARTE',w/2,25,'#e5dbbd',9);return;
   }
   if(phase==='transfer'){
-   this.stars(time);const origin=earth?'earth':'moon',destination=earth?'moon':'mars',r0=29-t*15,r1=25+t*22;c.drawImage(planetSprite(origin),Math.round(w*.13-r0),Math.round(h*.48-r0),r0*2,r0*2);c.drawImage(planetSprite(destination),Math.round(w*.85-r1),Math.round(h*.4-r1),r1*2,r1*2);const x=w*(.28+t*.4),y=h*.58-Math.sin(t*Math.PI)*30;c.save();c.translate(x,y);c.rotate(Math.PI/2);r.rocket(0,0,true);this.flame(0,-7,time,.4,true);c.restore();r.label(earth?'TRANSFERENCIA LUNAR / TIEMPO COMPRIMIDO':'TRANSFERENCIA A MARTE / MESES COMPRIMIDOS',w/2,25,'#e5dbbd',9);return;
+   this.stars(time);const origin=earth?'earth':'moon',destination=earth?'moon':'mars',r0=29-t*15,r1=25+t*22;c.drawImage(planetSprite(origin),Math.round(w*.13-r0),Math.round(h*.48-r0),r0*2,r0*2);c.drawImage(planetSprite(destination),Math.round(w*.85-r1),Math.round(h*.4-r1),r1*2,r1*2);const x=w*(.28+t*.4),y=h*.58-Math.sin(t*Math.PI)*30;c.save();c.translate(x,y);c.rotate(Math.PI/2);if(earth){this.capsule(0,0);rect(c,-8,5,16,14,'#9cacac');}else r.rocket(0,0,true);this.flame(0,20,time,.4,true);c.restore();r.label(earth?'TRANSFERENCIA LUNAR / TIEMPO COMPRIMIDO':'TRANSFERENCIA A MARTE / MESES COMPRIMIDOS',w/2,25,'#e5dbbd',9);return;
   }
   const planet=earth?'moon':'mars',floor=this.ground(planet,time),y=floor-(1-t)**2*h*.65;r.rocket(w*.53,y);if(t<.96)this.flame(w*.53,y-7,time,.3+(1-t)*.6,true);if(t>.66)drawLandingDust(c,time,{x:w*.53,floor,planet,strength:Math.max(.15,(1-t)*2)});r.label(earth?'DESCENSO LUNAR / MOTOR DE ATERRIZAJE':'MARTE / DESCENSO CONTROLADO',w/2,25,'#f2d9b2',10);
  }
- capsule(x,y,parachute=false){const c=this.r.ctx;rect(c,x-7,y-25,14,4,'#212c35');rect(c,x-11,y-21,22,9,'#c1c7b8');rect(c,x-14,y-12,28,10,'#d8d8bc');rect(c,x-15,y-2,30,5,'#4d4f49');rect(c,x-5,y-19,10,7,'#253b48');rect(c,x-3,y-18,6,3,'#90b4b2');rect(c,x+10,y-12,2,9,'#8b9891');if(parachute){line(c,x-10,y-23,x-38,y-66,'#d2d2b7');line(c,x+10,y-23,x+38,y-66,'#d2d2b7');line(c,x,y-23,x,y-79,'#d2d2b7');for(let i=0;i<9;i++){const dx=(i-4)*9,yy=y-85+Math.abs(i-4)*3;rect(c,x+dx-5,yy,10,Math.max(4,y-63-yy),i%2?'#d7dac1':'#cc7955');rect(c,x+dx-4,yy,8,2,i%2?'#f0e9d0':'#e4a76d');}}}
- ocean(time){const r=this.r,c=r.ctx,w=r.width,h=r.height,floor=h*.81,g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#536fca');g.addColorStop(.8,'#afc8d8');c.fillStyle=g;c.fillRect(0,0,w,h);drawSun(c,w*.18,h*.18,9,{atmosphere:true});for(let i=0;i<5;i++)c.drawImage(smokeSprite(i%4,3),Math.round(hash(i,3)*w+Math.sin(time*.07)*8),25+hash(i,7)*50,60,22);rect(c,0,floor,w,h-floor,'#38677b');rect(c,0,floor,w,2,'#acc3bd');for(let i=0;i<50;i++){const x=(hash(i,90)*w+time*(1+i%3))%w,y=floor+4+hash(i,91)*(h-floor-5);rect(c,x,y,5+i%7,1,i%3?'#578c98':'#a0bdba');}return floor;}
+ capsule(x,y,parachute=false){const c=this.r.ctx;rect(c,x-7,y-27,14,3,'#27313c');rect(c,x-10,y-24,20,5,'#e9e6d2');rect(c,x-12,y-19,24,6,'#c6cec5');rect(c,x-15,y-13,30,11,'#e0e0cb');rect(c,x-16,y-2,32,4,'#38424a');rect(c,x-13,y+2,26,2,'#897557');rect(c,x+10,y-14,3,11,'#9eafa9');rect(c,x-7,y-21,14,9,'#303e4d');rect(c,x-5,y-20,4,6,'#9dced1');rect(c,x+2,y-20,3,6,'#698caa');rect(c,x-8,y-10,15,7,'#b3c1b8');rect(c,x-6,y-9,11,1,'#eef1da');rect(c,x+3,y-7,2,2,'#6c7d78');rect(c,x-12,y-12,2,8,'#f0b165');if(parachute){line(c,x-10,y-23,x-38,y-66,'#d2d2b7');line(c,x+10,y-23,x+38,y-66,'#d2d2b7');line(c,x,y-23,x,y-79,'#d2d2b7');for(let i=0;i<9;i++){const dx=(i-4)*9,yy=y-85+Math.abs(i-4)*3;rect(c,x+dx-5,yy,10,Math.max(4,y-63-yy),i%2?'#d7dac1':'#cc7955');rect(c,x+dx-4,yy,8,2,i%2?'#f0e9d0':'#e4a76d');}}}
+ ocean(time){const r=this.r,c=r.ctx,w=r.width,h=r.height,floor=h*.75,g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#547bd5');g.addColorStop(.7,'#92c8e1');g.addColorStop(1,'#c5e1e3');c.fillStyle=g;c.fillRect(0,0,w,h);drawSun(c,w*.2,h*.2,10,{atmosphere:true});
+ for(let layer=0;layer<2;layer++)for(let i=0;i<12;i++){const x=(hash(i,3+layer)*w+time*(.3+layer*.5))%(w+80)-40,y=15+hash(i,7+layer)*h*.35;c.save();c.globalAlpha=layer?.85:.48;c.drawImage(smokeSprite(i%4,3),Math.round(x),Math.round(y),43+i%5*9,15+i%3*4);c.restore();}
+ for(let row=0;row<h-floor;row++){const k=row/(h-floor);rect(c,0,floor+row,w,1,k<.15?'#69b4bd':k<.4?'#3799af':k<.7?'#247f9e':'#236781');}
+ for(let i=0;i<110;i++){const depth=hash(i,91),x=(hash(i,90)*w+time*(.4+depth*3))%w,y=floor+3+depth*(h-floor-5),width=3+depth*13,crest=Math.sin(time*1.3+i);rect(c,x,y,width,1,i%7===0?'#d2ebe0':crest>.5?'#89cdd0':'#4ca6bb');if(i%5===0)rect(c,x+width*.3,y+1,width*.5,1,'#287f9a');}
+ for(let i=0;i<18;i++){const y=floor+3+i*1.3;rect(c,w*.2-5-i*.8+Math.sin(time+i)*3,y,10+i*1.6,1,'rgba(237,223,171,.35)');}return floor;}
+
  drawEarthHome(profile,time){const r=this.r,c=r.ctx,w=r.width,floor=this.ocean(time),x=w*.3;rect(c,x-52,floor-4,129,13,'#203f51');rect(c,x-44,floor+9,112,5,'#496b74');rect(c,x-49,floor-7,123,3,'#c6cbb5');rect(c,x+30,floor-36,33,29,'#aebcaf');rect(c,x+34,floor-32,25,10,'#395f70');rect(c,x+44,floor-59,2,24,'#bdc7b6');rect(c,x+36,floor-60,18,2,'#d6d5b4');this.capsule(x-20,floor-8);drawAvatar(c,r.art,profile,x+5,floor-41,{time,suited:false});r.label('TIERRA / RECUPERACIÓN DE LA TRIPULACIÓN',w/2,25,'#f0e5c4',9);}
  drawReturn(profile,time){
   const r=this.r,c=r.ctx,w=r.width,h=r.height,{phase,t}=cinemaState(time,'earth');this.state=cinemaState(time,'earth');
   if(phase==='launch'){const floor=this.ground('mars',time),y=floor-t*t*(h+90);r.rocket(w*.53,y);this.flame(w*.53,y-7,time,.8,true);if(t<.35)drawLandingDust(c,time,{x:w*.53,floor,planet:'mars',strength:1-t});r.label('SALIDA DE MARTE / CARGA CIENTÍFICA A BORDO',w/2,25,'#f1dab8',9);return;}
+  if(phase==='separation'){
+   this.stars(time);const cx=w*.52,cy=h*.4;
+   c.save();c.translate(cx-18-t*50,cy+75+t*70);c.rotate(-t*.22);r.launcher(0,0,true);c.restore();
+   this.capsule(cx+t*22,cy-t*20);rect(c,cx-10+t*22,cy+4-t*20,20,13,'#9aabac');rect(c,cx-7+t*22,cy+17-t*20,14,4,'#424b56');
+   r.label('SEPARACIÓN / CÁPSULA LIBRE · RUMBO A ÓRBITA',w/2,25,'#f2d9ab',9);return;
+  }
   if(phase==='orbit'){this.stars(time);const cx=w*.36,cy=h*.57,rad=Math.min(h*.25,72),angle=.3-t*2.6;c.drawImage(planetSprite('mars'),cx-rad,cy-rad,rad*2,rad*2);const x=cx+Math.cos(angle)*(rad+55),y=cy+Math.sin(angle)*(rad+55)*.7;this.capsule(x,y);r.label('ÓRBITA MARCIANA / PREPARANDO EL REGRESO',w/2,25,'#e6ddbe',9);return;}
   if(phase==='transfer'){this.stars(time);const from=30-t*13,to=23+t*30;c.drawImage(planetSprite('mars'),w*.12-from,h*.44-from,from*2,from*2);c.drawImage(planetSprite('earth'),w*.84-to,h*.43-to,to*2,to*2);this.capsule(w*(.27+t*.39),h*.57-Math.sin(t*Math.PI)*25);r.label('RUMBO A LA TIERRA / MESES COMPRIMIDOS',w/2,25,'#e6ddbe',9);return;}
   if(phase==='reentry'){const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#232a48');g.addColorStop(1,'#8eafc3');c.fillStyle=g;c.fillRect(0,0,w,h);const rad=h*.75;c.drawImage(planetSprite('earth'),w*.5-rad,h*.88,rad*2,rad*2);const x=w*.53,y=h*.3+t*h*.25;c.save();c.translate(x,y);c.rotate(-.35);for(let i=0;i<18;i++)rect(c,-15+hash(i,6)*28,4+i*2,1+i%3,2,i%3?'#e9ac61':'#f3d497');this.capsule(0,0);rect(c,-14,3,28,2,'#edb070');c.restore();r.label('TIERRA / REENTRADA Y ESCUDO TÉRMICO',w/2,25,'#f3e2bf',9);return;}

@@ -1,3 +1,7 @@
+# Actualización de integración junior
+
+Consulta primero `README.md` y `CAMBIOS-JUNIOR.md`: describen los nuevos menús, atajos, costes y pruebas. El contenido siguiente documenta versiones anteriores.
+
 # Frontera 2D v5: fabricar, explorar y volver a casa
 
 > Entrega integrada: mapa, selección de materiales, rover y avisos ya conectados.

@@ -1,3 +1,5 @@
+> Actualización: el HUD, los límites de puentes, daño de caída y velocidad del rover se revisaron en `CAMBIOS-JUNIOR.md`. Este documento conserva los contratos de la primera integración.
+
 # Mecánicas 2D: integración de Agente 1
 
 > En `release/orbita-frontera-2d` las conexiones de interfaz descritas como

@@ -20,12 +20,12 @@ un hosting estático y servir `index.html`. No abrir con `file://`.
 - A/D o flechas: caminar; espacio: saltar y segundo impulso con energía.
 - Mantener clic o F: picar. Clic derecho o B: colocar el material seleccionado.
 - E: usar estaciones, entrar o salir del rover. T: cambiar traje dentro de la base.
-- I: mochila, fabricación y selección de material/procedencia.
+- I o Tab: mochila. C: taller. J: bitácora. H: ocultar indicadores.
 - M o botón MAPA: abrir/cerrar mapa. Tocar el terreno o una ubicación marca un
   destino; Escape cierra. El mapa pausa la exploración.
 - Conduciendo: controles laterales para acelerar, espacio o botón ■ para frenar.
   También se puede salir con el botón del panel ROVER.
-- En móvil: botones táctiles en pantalla y botones de mochila/mapa.
+- En móvil: joystick izquierdo, botones de acción y accesos a mochila, taller, bitácora y mapa.
 
 El rover se fabrica en el taller de Marte por 12 regolitos, 8 hierro y 18 energía.
 Después se despliega con USAR desde la mochila, fuera del hábitat y con traje.
@@ -40,9 +40,7 @@ otro almacenamiento. No se incluyen partidas personales en el ZIP. Se mantienen
 las migraciones de partidas anteriores. La procedencia que una partida antigua
 nunca registró se asigna al planeta guardado.
 
-La campaña incluye Luna, Marte y regreso a la Tierra con informe final. El enlace
-al simulador 3D abre un proyecto publicado separado; el ZIP contiene solo el juego
-2D. Mapas, reservas, velocidades y eventos solares son parámetros educativos; las
+La campaña incluye Luna, Marte y regreso a la Tierra con informe final. El paquete contiene el juego 2D integrado. Mapas, reservas, velocidades y eventos solares son parámetros educativos; las
 fuentes NASA son referencias, no datos en vivo.
 
 ## Desarrollo y validación
@@ -65,7 +63,7 @@ Las pruebas de navegador usan Python Playwright y Chromium:
 python3 -m pip install playwright
 python3 INICIAR.py --no-browser --port 8765
 # En otra terminal, con Chromium instalado:
-python3 tools/browser-smoke.py --url http://127.0.0.1:8765
+python3 tools/junior-browser.py --url http://127.0.0.1:8765
 ```
 
 La suite de Node recorre la campaña y valida físicas, guardado, minería y

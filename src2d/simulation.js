@@ -1,3 +1,4 @@
+import {juniorState,trainingObjective,flightChecklist,tickJunior,dustPhase} from './junior-mission.js';
 import config from '../data/pixel-config.json' with {type:'json'};
 import {PixelWorld,TILE,UNIT,WIDTH,HEIGHT,PLAYER_HEIGHT,BLOCK,STATIONS,worldOptions} from './world.js';
 import {AstronautAnimator} from './animation.js';
@@ -26,7 +27,7 @@ export function createState(profile={},seed=null){
 }
 export function restoreState(raw){
  if(!raw||![1,2].includes(raw.schema)||!['moon','mars'].includes(raw.planet)||!raw.player||!raw.resources||!raw.inventory||!raw.flags)throw new Error('La partida no tiene un formato compatible.');
- if(raw.worldVersion!==undefined&&![1,2,3].includes(raw.worldVersion))throw new Error('La versión del mapa no es compatible.');const seeded=raw.worldVersion>=2;if(seeded&&(!Number.isInteger(raw.worldSeed)||raw.worldSeed<0||raw.worldSeed>0xffffffff))throw new Error('La semilla del mapa está dañada.');const s=createState(raw.profile,seeded?raw.worldSeed:null);s.worldVersion=raw.worldVersion||1;s.equipment.suited=raw.equipment?.suited!==false;s.equipment.pickaxe=clamp(Math.floor(Number(raw.equipment?.pickaxe)||1),1,4);s.planet=raw.planet;s.support=restoreSupport(raw.support);
+ if(raw.worldVersion!==undefined&&![1,2,3].includes(raw.worldVersion))throw new Error('La versión del mapa no es compatible.');const seeded=raw.worldVersion>=2;if(seeded&&(!Number.isInteger(raw.worldSeed)||raw.worldSeed<0||raw.worldSeed>0xffffffff))throw new Error('La semilla del mapa está dañada.');const s=createState(raw.profile,seeded?raw.worldSeed:null);s.worldVersion=raw.worldVersion||1;s.equipment.suited=raw.equipment?.suited!==false;s.equipment.pickaxe=clamp(Math.floor(Number(raw.equipment?.pickaxe)||1),1,4);s.planet=raw.planet;s.support=restoreSupport(raw.support);s.junior=juniorState(raw.junior||{training:3});
  for(const key of Object.keys(s.resources)){if(!Number.isFinite(raw.resources[key]))throw new Error('Recursos dañados.');s.resources[key]=clamp(raw.resources[key],0,100);}
  for(const key of Object.keys(s.inventory))s.inventory[key]=clamp(Math.floor(Number(raw.inventory[key])||0),0,999);
  for(const key of Object.keys(s.flags))s.flags[key]=raw.flags[key]===true;
@@ -44,13 +45,16 @@ export function restoreState(raw){
 }
 export function objective(s){
  if(s.flags.returnedEarth)return marsObjective(s);
+ const training=trainingObjective(s);if(training)return training;
+ if(s.planet==='mars'&&s.junior&&['warning','active'].includes(dustPhase(s.junior.dustClock)))return{step:9,title:'Vuelve al refugio',detail:'Se acerca polvo. Dentro estarás protegido mientras pasa. Los paneles producirán menos energía.',station:'control',safety:true};
  const solar=s.support?.weather[s.planet]?.phase;if(['warning','active'].includes(solar))return{step:s.planet==='moon'?4:9,title:solar==='warning'?'Busca refugio':'Protege a tu tripulación',detail:'Simulacro solar: regresa al hábitat. Puedes reforzarlo en el depósito; esperar consume provisiones.',station:'storage',safety:true};
- if(s.planet==='mars'){if(!s.flags.marsOnline)return{step:8,title:'Un nuevo hogar',detail:'Activa el control del refugio marciano.',station:'control'};if(!s.flags.marsAnalyzed){if(s.inventory.samples<1)return{step:9,title:'La historia de Marte',detail:'Recoge una muestra de basalto al este.',sample:true};return{step:10,title:'Conecta los dos mundos',detail:'Analiza la muestra en el laboratorio. Agua 2 · energía 8.',station:'lab'};}return marsObjective(s);}
+ if(s.planet==='mars'){if(!s.flags.marsOnline)return{step:8,title:'Un nuevo hogar',detail:'Activa el control del refugio marciano.',station:'control'};if(!s.flags.marsAnalyzed){if(s.inventory.samples<1)return{step:9,title:'La historia de Marte',detail:'Recoge una roca volcánica al este. Es una pista del pasado de Marte.',sample:true};return{step:10,title:'Conecta los dos mundos',detail:'Estudia la roca que recogiste en el laboratorio. Agua 2 · energía 8.',station:'lab'};}return marsObjective(s);}
  if(!s.flags.baseOnline)return{step:1,title:'Despierta el hábitat',detail:'Acércate al control y pulsa E.',station:'control'};
  const repair=s.profile.role==='engineer'?5:6;
  if(!s.flags.solarOnline){if(s.inventory.regolith<repair)return{step:2,title:'Tus primeros recursos',detail:`Mantén pulsado el pico para reunir ${repair} unidades de regolito. Sal por la derecha.`,mining:true};return{step:3,title:'Luz para vivir',detail:`Repara el campo solar al este. Coste: ${repair} regolitos.`,station:'solar'};}
  if(!s.flags.analyzed){if(s.inventory.samples<3)return{step:4,title:'Mensajes en las rocas',detail:`Recoge las tres muestras: ${s.inventory.samples}/3. Sigue hacia el este.`,sample:true};return{step:5,title:'Ciencia en casa',detail:'Lleva las muestras al laboratorio. El análisis usa agua y energía.',station:'lab'};}
- if(!s.flags.module)return{step:6,title:'El siguiente horizonte',detail:'Fabrica el módulo de viaje: 12 regolitos · 4 hierro · energía 20.',station:'bench'};
+ if(!s.flags.module)return{step:6,title:'El siguiente horizonte',detail:'Fabrica el módulo de viaje: 16 de suelo · 6 hierro · 25 energía.',station:'bench'};
+ if(s.junior&&flightChecklist(s).some(c=>!c.ready))return{step:7,title:'Prepara un viaje largo',detail:flightChecklist(s).filter(c=>!c.ready).map(c=>c.es).join(' · '),station:'bench'};
  return{step:7,title:'Rumbo al planeta rojo',detail:'Tu nave está al oeste de la base. Pulsa E para viajar a Marte.',station:'rocket'};
 }
 export class Simulation{
@@ -58,7 +62,7 @@ export class Simulation{
  on(type,listener){if(typeof listener!=='function')throw new TypeError('Expected a listener function');if(!this.listeners.has(type))this.listeners.set(type,new Set());this.listeners.get(type).add(listener);return()=>this.listeners.get(type)?.delete(listener);}
  emit(type,detail={}){const event=Object.freeze({...detail,type,sequence:++this.eventSequence,planet:this.s.planet,time:this.s.elapsed});if(this.events.length>=128)this.events.shift();this.events.push(event);for(const listener of this.listeners.get(type)||[]){try{listener(event);}catch(error){if(this.events.length>=128)this.events.shift();this.events.push(Object.freeze({type:'integration:error',sequence:++this.eventSequence,planet:this.s.planet,time:this.s.elapsed,source:type,message:String(error?.message||error).slice(0,240)}));}}return event;}
  drainEvents(){return this.events.splice(0);}
- openMap(){this.map.setOpen(true);return this.map.snapshot();}
+ openMap(){if(this.s.junior?.training===2)this.s.junior.training=3;this.map.setOpen(true);return this.map.snapshot();}
  closeMap(){this.map.setOpen(false);}
  toggleMap(){return this.map.toggle();}
  mapSnapshot(){return this.map.snapshot();}
@@ -71,7 +75,7 @@ export class Simulation{
  nearest(){const driving=drivingVehicle(this);if(driving)return{id:driving.id,type:'vehicle',name:'Salir del rover',distance:0};const p=this.s.player,candidates=STATIONS.map(o=>({...o,x:o.x*UNIT+8,y:33*UNIT-13}));for(const v of this.s.vehicles)if(v.planet===this.s.planet)candidates.push({id:v.id,type:'vehicle',name:'Conducir rover / E',x:v.x+24,y:v.y+12});for(const point of this.world.pointsOfInterest())if(!this.s.collected.includes(point.id))candidates.push({...point,type:'sample'});for(const point of discoverySites(this.world))if(!this.s.discoveries.includes(point.id))candidates.push(point);return candidates.map(o=>({...o,distance:Math.hypot(p.x+6-o.x,p.y+PLAYER_HEIGHT/2-o.y)})).filter(o=>o.distance<43).sort((a,b)=>a.distance-b.distance)[0]||null;}
  tick(dt,input={}){
   if(!Number.isFinite(dt)||dt<=0)return;dt=Math.min(.1,dt);settleStructures(this);
-  const s=this.s,p=s.player,w=this.world;this.cooldown=Math.max(0,this.cooldown-dt);if(s.resources.health<=0||s.flags.returnedEarth)return;
+  const s=this.s,p=s.player,w=this.world,previousX=p.x;this.cooldown=Math.max(0,this.cooldown-dt);if(s.resources.health<=0||s.flags.returnedEarth)return;
   tickVehicles(this,dt,input);tickCollapses(this,dt);
   if(!drivingVehicle(this)){
   const desired=clamp(input.axis||0,-1,1)*(input.run?config.mobility.run:config.mobility.walk),rate=p.grounded?12:4;p.vx+=(desired-p.vx)*(1-Math.exp(-rate*dt));if(Math.abs(p.vx)<.05&&desired===0)p.vx=0;if(desired)p.facing=Math.sign(desired);
@@ -86,7 +90,7 @@ export class Simulation{
   s.resources.oxygen=clamp(s.resources.oxygen+dt*(inside&&online&&s.resources.energy>0&&s.resources.water>0?.65:-config[s.planet].oxygenRate*(s.profile.role==='explorer'?.92:1)*(input.run?1.25:1)),0,100);
   if(online&&s.resources.energy>0){s.resources.water=clamp(s.resources.water-dt*.004,0,100);if(inside&&s.resources.oxygen>15)s.resources.health=clamp(s.resources.health+dt*.15,0,100);}
   if(s.resources.oxygen<=0||s.resources.water<=0)s.resources.health=clamp(s.resources.health-dt*1.4,0,100);
-  for(const f of s.fixtures)if(f.planet===s.planet&&f.type==='lamp')f.charge=Math.max(0,f.charge-dt*.04);tickSupport(this,dt,{inside,online});this.animation.update(dt,p,{mining:!!this.mining,boost:s.elapsed-(this.lastBoostAt??-10)<.25});
+  for(const f of s.fixtures)if(f.planet===s.planet&&f.type==='lamp')f.charge=Math.max(0,f.charge-dt*.04);tickSupport(this,dt,{inside,online});tickJunior(this,dt,input,previousX);this.animation.update(dt,p,{mining:!!this.mining,boost:s.elapsed-(this.lastBoostAt??-10)<.25});
   if(p.y>(HEIGHT-3)*TILE){s.resources.health=Math.max(0,s.resources.health-15);p.x=this.checkpoint.x;p.y=this.checkpoint.y;p.vx=p.vy=0;this.tell('El equipo te devuelve al refugio. La exploración profunda necesita reservas y una ruta de salida. Salud −15.');}
  }
  suitAllows(x,y){return this.s.equipment.suited||this.world.inside({x,y});}
@@ -138,7 +142,7 @@ export class Simulation{
   for(let i=1;i<n;i++)if(this.world.solidAt(sx+dx*i/n,sy+dy*i/n))return fail('line-of-sight');
   const key=tx+','+ty+','+material.block;
   if(this.blockPreview?.world===this.world&&this.blockPreview.revision===this.world.revision&&this.blockPreview.key===key)return{...this.blockPreview.result};
-  const result=analyzeStructure(this.world,{tx,ty,block:material.block}),stable=result.supported.has(ty*WIDTH+tx),preview={ok:stable,stable,reason:stable?null:'unsupported',tx,ty,material:material.id,span:result.supported.get(ty*WIDTH+tx)};
+  const result=analyzeStructure(this.world,{tx,ty,block:material.block}),stable=result.supported.has(ty*WIDTH+tx),preview={ok:true,stable,reason:stable?null:'unsupported',tx,ty,material:material.id,span:result.supported.get(ty*WIDTH+tx)};
   this.blockPreview={world:this.world,revision:this.world.revision,key,result:preview};return{...preview};
  }
  place(tx,ty,materialId=null){
@@ -158,7 +162,7 @@ export class Simulation{
   if(item.id==='lab'){if(s.planet==='mars'&&s.flags.marsAnalyzed&&!s.flags.marsReport&&s.discoveries.length===3){const result=finishMarsReport(this);if(!result.ok)this.tell(result.text);return result.ok?'report':'locked';}const mars=s.planet==='mars',done=mars?s.flags.marsAnalyzed:s.flags.analyzed,need=mars?1:3,water=mars?2:s.profile.role==='biologist'?3:4,energy=mars?8:12;if(done){this.tell('Análisis completado. Los datos se conservan; repetirlo no genera recompensas ilimitadas.');return 'lab';}if(s.inventory.samples<need||r.water<water||r.energy<energy){this.tell(`Analizar requiere ${need} muestras, ${water} agua y ${energy} energía.`);return 'locked';}s.inventory.samples-=need;r.water-=water;r.energy-=energy;if(mars)s.flags.marsAnalyzed=true;else s.flags.analyzed=true;this.tell(mars?'¡Enlace científico establecido! Has conectado dos mundos manteniendo vivo a tu equipo.':'Investigación completada. Ya puedes fabricar el módulo de viaje en el banco de trabajo.');return 'lab';}
   if(item.id==='storage'){if(s.inventory.ice>0&&r.energy>=3){s.inventory.ice--;r.energy-=3;r.water=Math.min(100,r.water+15);this.tell('Hielo procesado: agua +15 y energía −3. Encontrar hielo utilizable depende del lugar; aquí es una simplificación educativa.');}else this.tell('Depósito: convierte 1 hielo y 3 energía en agua. Usa una ración desde el inventario para recuperar salud.');return 'storage';}
   if(item.id==='bench')return 'craft';
-  if(item.id==='rocket'){if(s.planet==='mars'&&s.flags.returnReady&&s.flags.marsReport){s.flags.earthDeparture=true;return 'return';}if(!s.flags.module||s.planet==='mars'){this.tell(s.planet==='mars'?'La nave queda como refugio de la expedición. Tu siguiente objetivo está en el hábitat.':'Antes de despegar, investiga y construye el módulo de viaje en el banco.');return 'locked';}s.flags.marsUnlocked=true;return 'travel';}return null;
+  if(item.id==='rocket'){if(s.planet==='mars'&&s.flags.returnReady&&s.flags.marsReport){s.flags.earthDeparture=true;return 'return';}if(!s.flags.module||s.planet==='mars'){this.tell(s.planet==='mars'?'La nave queda como refugio de la expedición. Tu siguiente objetivo está en el hábitat.':'Antes de despegar, investiga y construye el módulo de viaje en el banco.');return 'locked';}if(s.junior){const missing=flightChecklist(s).filter(c=>!c.ready);if(missing.length){this.tell('Antes de viajar: '+missing.map(c=>c.es).join(' · '));return 'locked';}}s.flags.marsUnlocked=true;return 'travel';}return null;
  }
  craft(id){return craftItem(this,id);}
  previewPlacement(id,x,y){return placementPreview(this,id,x,y);}
@@ -169,6 +173,6 @@ export class Simulation{
  manageHabitat(id){reconcileMaterials(this.s);const result=habitatAction(this,id);reconcileMaterials(this.s);if(result.ok)this.tell(result.text);return result;}
  eat(){if(this.s.inventory.rations<1||(this.s.resources.health>=100&&this.s.support.nutrition>=95))return false;this.s.inventory.rations--;this.s.resources.health=Math.min(100,this.s.resources.health+25);this.s.support.nutrition=Math.min(100,this.s.support.nutrition+30);this.tell('Ración utilizada: nutrición +30 y salud +25. Las provisiones son limitadas.');return true;}
  arriveMars(){if(!this.s.flags.marsUnlocked||this.s.planet!=='moon'||this.s.flags.returnedEarth)return false;reconcileMaterials(this.s);this.s.driving=null;this.stopMining();this.collapses.length=0;this.s.worlds[this.s.planet]=this.world.edits;this.s.planet='mars';this.world=new PixelWorld('mars',this.s.worlds.mars,worldOptions(this.s,'mars'));Object.assign(this.s.player,{x:26*UNIT,y:33*UNIT-PLAYER_HEIGHT,vx:0,vy:0,grounded:true});this.s.equipment.suited=true;validateVehiclePositions(this);settleStructures(this);this.s.resources.oxygen=Math.max(70,this.s.resources.oxygen);this.s.resources.energy=Math.max(65,this.s.resources.energy);this.tell('Marte: su atmósfera es tenue y no respirable. El traje sigue siendo necesario; la gravedad es mayor que en la Luna.');return true;}
- arriveEarth(){if(this.s.flags.returnedEarth||this.s.planet!=='mars'||!this.s.flags.earthDeparture||!this.s.flags.returnReady||!this.s.flags.marsReport)return false;this.s.driving=null;this.stopMining();this.s.flags.returnedEarth=true;this.s.equipment.suited=false;this.tell('Regreso a la Tierra completado. Tus muestras, observaciones y decisiones forman el informe final.');return true;}
+ arriveEarth(){if(this.s.flags.returnedEarth||this.s.planet!=='mars'||!this.s.flags.earthDeparture||!this.s.flags.returnReady||!this.s.flags.marsReport)return false;this.s.driving=null;this.stopMining();this.s.flags.returnedEarth=true;this.s.equipment.suited=false;tickJunior(this,0,{},this.s.player.x);this.tell('Regreso a la Tierra completado. Tus muestras, observaciones y decisiones forman el informe final.');return true;}
  rescue(){reconcileMaterials(this.s);this.s.driving=null;this.stopMining();this.s.resources.health=100;this.s.support.nutrition=Math.max(50,this.s.support.nutrition);this.s.resources.oxygen=85;this.s.resources.energy=Math.max(35,this.s.resources.energy);this.s.resources.water=Math.max(25,this.s.resources.water);this.s.inventory.regolith=Math.max(0,this.s.inventory.regolith-5);reconcileMaterials(this.s);Object.assign(this.s.player,{...this.checkpoint,vx:0,vy:0});this.tell('Rescate de entrenamiento: vuelves al hábitat. Se gastaron cinco regolitos de suministros.');}
 }

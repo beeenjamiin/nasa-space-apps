@@ -33,7 +33,7 @@ export class PixelWorld{
   for(const [key,value]of Object.entries(this.edits)){const index=Number(key);if(Number.isInteger(index)&&index>=0&&index<this.tiles.length&&validSavedBlock(value)&&!this.protected(index%WIDTH,Math.floor(index/WIDTH))){this.tiles[index]=value;if(isPlacedBlock(value))this.placed.add(index);}}
  }
  surfaceAt(x){return surfaceAt(x,this.planet,this.seed,this.version);}
- pointsOfInterest(){return pointsOfInterest(this.planet,this.seed,this.version);}
+ pointsOfInterest(){return pointsOfInterest(this.planet,this.seed,this.version).map(p=>({...p,y:this.groundY(p.x)-9}));}
  materialAt(x,y){return materialForBlock(this.get(x,y),this.planet);}
  get(x,y){if(x<0||x>=WIDTH||y>=HEIGHT)return BLOCK.ROCK;if(y<0)return BLOCK.AIR;return this.tiles[y*WIDTH+x];}
  protected(x,y){const mx=x/2,my=y/2;return(mx>=19&&mx<=45&&my>=24&&my<=34)||(mx>=14&&mx<=18&&my>=32&&my<=34)||([47,50,53].some(tx=>Math.abs(mx-tx)<=1)&&my>=30&&my<=35)||(this.protectedSites||[]).some(p=>Math.abs(x-p.x)<=2&&y>=p.y&&y<=p.y+2);}
@@ -45,7 +45,7 @@ export class PixelWorld{
  collides(x,y,w=12,h=PLAYER_HEIGHT){for(let ty=Math.floor(y/TILE);ty<=Math.floor((y+h-.01)/TILE);ty++)for(let tx=Math.floor(x/TILE);tx<=Math.floor((x+w-.01)/TILE);tx++)if(this.get(tx,ty))return true;return false;}
 }
 export const STATIONS=[{id:'control',x:25,name:'Control del hábitat',icon:'⚡'},{id:'lab',x:30,name:'Laboratorio',icon:'◈'},{id:'bench',x:35,name:'Banco de fabricación',icon:'⚒'},{id:'storage',x:39,name:'Depósito de suministros',icon:'▣'},{id:'eva',x:42,name:'Armario EVA / cambiar traje',icon:'◉'},{id:'solar',x:49,name:'Campo solar',icon:'☀'},{id:'rocket',x:16,name:'Nave de expedición',icon:'▲'}];
-export function pointsOfInterest(planet,seed=LEGACY_SEEDS[planet],version=1){return [68,88,116].map((x,i)=>({id:planet+'-sample-'+i,x:x*UNIT+8,y:surfaceAt(x*2,planet,seed,version)*TILE-9,name:planet==='moon'?['Brecha de impacto','Basalto lunar','Regolito del borde'][i]:['Basalto marciano','Estrato sedimentario','Muestra mineral'][i]}));}
+export function pointsOfInterest(planet,seed=LEGACY_SEEDS[planet],version=1){return [68,88,116].map((x,i)=>({id:planet+'-sample-'+i,x:x*UNIT+8,y:surfaceAt(x*2,planet,seed,version)*TILE-9,name:planet==='moon'?['Roca de un impacto','Roca volcánica lunar','Suelo del cráter'][i]:['Roca volcánica de Marte','Roca con capas','Roca con minerales'][i]}));}
 
 /** Connected mineral bodies with bends and branches, never four-cell noise squares. */
 function growVeins(world){

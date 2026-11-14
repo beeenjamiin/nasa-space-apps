@@ -67,9 +67,9 @@ test('legacy saves preserve progress and grid edits while receiving safe gamepla
 });
 
 test('structure spans are finite and shorter in Martian gravity; disconnected cycles never support themselves',()=>{
- const moon=bridge('moon',9),mars=bridge('mars',9),a=analyzeStructure(moon.world),b=analyzeStructure(mars.world);
- assert.equal(a.supported.has(98*WIDTH+156),true);assert.equal(a.supported.has(98*WIDTH+157),false);
- assert.equal(b.supported.has(98*WIDTH+153),true);assert.equal(b.supported.has(98*WIDTH+154),false);
+ const moon=bridge('moon',12),mars=bridge('mars',12),a=analyzeStructure(moon.world),b=analyzeStructure(mars.world);
+ assert.equal(a.supported.has(98*WIDTH+158),true);assert.equal(a.supported.has(98*WIDTH+159),false);
+ assert.equal(b.supported.has(98*WIDTH+155),true);assert.equal(b.supported.has(98*WIDTH+156),false);
  const sim=flat();for(const [x,y]of [[180,90],[181,90],[180,91],[181,91]])sim.world.set(x,y,MATERIALS['moon-rock'].block);
  assert.equal(analyzeStructure(sim.world).unsupported.length,4);settleStructures(sim);assert.equal(sim.world.placed.size,0);
 });
@@ -83,16 +83,16 @@ test('removing the real anchor collapses a bridge, persists removal and animates
  const canvas=createCanvas(160,100);drawGameplayWorld(canvas.getContext('2d'),sim,{x:1190,y:760},0);assert.ok(canvas.getContext('2d').getImageData(0,0,160,100).data.some(v=>v));
 });
 
-test('unsupported placement is rejected atomically and stability work only runs after terrain changes',()=>{
+test('unsupported blocks are paid for and fall; stability work only runs after terrain changes',()=>{
  const sim=flat();sim.s.inventory.regolith=10;
- assert.equal(sim.place(130,94),false);assert.equal(sim.s.inventory.regolith,10);
+ assert.equal(sim.place(130,94),true);assert.equal(sim.s.inventory.regolith,9);assert.equal(sim.world.get(130,94),0);assert.equal(sim.collapses.length,1);
  tick(sim,.1);const checks=sim.structureChecks;tick(sim,2);assert.equal(sim.structureChecks,checks);
  sim.world.set(180,100,0);sim.tick(1/60);assert.equal(sim.structureChecks,checks+1);
  assert.equal(sim.place(NaN,98),false);assert.equal(sim.world.set(125.5,98,1),false);
 });
 
-test('the public placement API refuses extending an actual cantilever beyond its material limit',()=>{
- for(const [planet,span]of [['moon',4],['mars',2]]){
+test('excess cantilever blocks fall after a more tolerant supported span',()=>{
+ for(const [planet,span]of [['moon',6],['mars',4]]){
   const sim=flat(planet);sim.s.inventory.regolith=20;
   for(let y=100;y<HEIGHT;y++)for(let x=129;x<150;x++)sim.world.tiles[y*WIDTH+x]=0;
   for(let i=0;i<=span;i++){
@@ -100,7 +100,7 @@ test('the public placement API refuses extending an actual cantilever beyond its
    assert.equal(sim.place(128+i,99),true,planet+' supported cell '+i);
   }
   Object.assign(sim.s.player,{x:(128+span)*8,y:99*8-34});
-  const quantity=sim.s.inventory.regolith;assert.equal(sim.place(129+span,99),false);assert.equal(sim.s.inventory.regolith,quantity);
+  const quantity=sim.s.inventory.regolith;assert.equal(sim.previewBlock(129+span,99).stable,false);assert.equal(sim.place(129+span,99),true);assert.equal(sim.world.get(129+span,99),0);assert.equal(sim.collapses.length,1);assert.equal(sim.s.inventory.regolith,quantity-1);
  }
 });
 
