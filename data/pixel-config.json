@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "tileSize": 8,
+  "width": 640,
+  "height": 172,
+  "pixelsPerMeter": 16,
+  "moon": {
+    "gravity": 1.62,
+    "seed": 71423,
+    "oxygenRate": 0.11,
+    "surfaceColor": "#8e918f"
+  },
+  "mars": {
+    "gravity": 3.71,
+    "seed": 99127,
+    "oxygenRate": 0.13,
+    "surfaceColor": "#bc795b"
+  },
+  "simulationNote": "Consumos, distancias, reservas y tiempos son parámetros educativos simplificados. No son mediciones de una misión NASA.",
+  "mobility": {
+    "walk": 46,
+    "run": 65,
+    "jump": 60,
+    "boost": 45,
+    "boostEnergy": 3,
+    "note": "El segundo impulso del traje es una ayuda ficticia de jugabilidad, no una capacidad de un traje NASA."
+  },
+  "support": {
+    "solarWarningAt": 90,
+    "solarActiveAt": 114,
+    "solarEndsAt": 149,
+    "cropSeconds": 12,
+    "cropWater": 6,
+    "cropEnergy": 4,
+    "cropPower": 0.07,
+    "shieldRegolith": 8,
+    "shieldIron": 2,
+    "initialSeeds": 6,
+    "nutritionRate": 0.012,
+    "radiationRate": 0.9,
+    "radiationHealthRate": 0.5,
+    "shelterTransmission": 0.25,
+    "reinforcedTransmission": 0.04,
+    "note": "Ejercicio programado, sin datos solares en vivo. Exposición sin unidades de dosis; tiempos y fracciones de atenuación ficticios."
+  },
+  "pickaxe": {
+    "speed": [
+      1,
+      1.35,
+      1.8,
+      2.4
+    ],
+    "upgrades": [
+      {
+        "regolith": 6,
+        "iron": 2,
+        "energy": 6
+      },
+      {
+        "regolith": 10,
+        "iron": 4,
+        "energy": 9
+      },
+      {
+        "regolith": 14,
+        "iron": 6,
+        "energy": 12
+      }
+    ],
+    "note": "Cuatro niveles de herramienta; costes y rapidez son parámetros de jugabilidad."
+  },
+  "power": {
+    "fieldProduction": 0.12,
+    "habitatUse": 0.055,
+    "idleUse": 0.012,
+    "panelRates": [
+      0,
+      0.045,
+      0.075,
+      0.115
+    ],
+    "note": "Producción del campo +20 % respecto a v4. Tasas del juego, no mediciones de paneles reales."
+  }
+}

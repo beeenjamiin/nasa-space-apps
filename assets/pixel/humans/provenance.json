@@ -1,0 +1,106 @@
+{
+  "author": "Ragde",
+  "title": "Astro",
+  "primarySource": "https://opengameart.org/content/astro",
+  "download": "https://opengameart.org/sites/default/files/astro_0.png",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "licenseSelection": "La publicación del autor ofrece CC-BY 3.0 y CC0; este proyecto selecciona la alternativa CC0. Se conserva crédito voluntario a Ragde.",
+  "verifiedOn": "2026-11-14",
+  "file": "astro.png",
+  "bytes": 1443,
+  "sha256": "12dab28fcb5297187ae1fc2e1d59eb8657d672c051d9d3ae2a34006d940c5e9a",
+  "image": {
+    "width": 576,
+    "height": 32,
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "columns": 18,
+    "rows": 1,
+    "spacing": 0,
+    "unchangedDownload": true
+  },
+  "animations": {
+    "idle": {
+      "frames": [
+        0,
+        1
+      ],
+      "fps": 3
+    },
+    "walk": {
+      "frames": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "fps": 9
+    },
+    "armsForward": {
+      "frames": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "fps": 9
+    },
+    "airPose": {
+      "frame": 8,
+      "note": "Reutilización de una postura de andar, decisión de diseño del juego. El autor no publica una secuencia de salto etiquetada."
+    }
+  },
+  "mappingStatus": "Secuencias interpretadas mediante inspección visual de las18celdas. La publicación solo describe una animación de astronauta32x32; no incluye un archivo de metadatos de clips.",
+  "origin": {
+    "x": 16,
+    "y": 31,
+    "meaning": "centro horizontal y contacto de pies para la pose0"
+  },
+  "idleAlphaBounds": {
+    "left": 7,
+    "top": 0,
+    "rightExclusive": 25,
+    "bottomExclusive": 31
+  },
+  "appearance": {
+    "helmetApproxRows": [
+      0,
+      12
+    ],
+    "torsoApproxRows": [
+      13,
+      24
+    ],
+    "legsApproxRows": [
+      25,
+      30
+    ],
+    "suitPalette": [
+      "#babfcc",
+      "#aeb2bd",
+      "#81848c",
+      "#6e7178"
+    ],
+    "glovesBootsPalette": [
+      "#ede3cc",
+      "#d4cbb8"
+    ],
+    "visorPalette": [
+      "#bfe2f2",
+      "#93b7c7"
+    ],
+    "highlight": "#ffffff",
+    "outline": "#000000",
+    "note": "Las regiones cambian ligeramente al caminar; recolorear por paleta es más estable que cortar máscaras rectangulares fijas."
+  },
+  "contentNote": "Sprite original publicado por Ragde. No procede de Terraria ni Minecraft. Cuerpo completo con traje y casco; no incluye cara, pelo o ropa civil personalizables."
+}

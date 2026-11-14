@@ -1,0 +1,63 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createCanvas,loadImage} from '@napi-rs/canvas';
+import {Simulation,createState,restoreState,objective} from '../src2d/simulation.js';
+import {PixelWorld,worldOptions,TILE,WIDTH,BLOCK} from '../src2d/world.js';
+import {RECIPES,PANEL_POWER} from '../src2d/crafting.js';
+import {DISCOVERIES,discoverySites,hasSurveyBeacon} from '../src2d/expedition.js';
+import {darknessAtDepth,CaveLighting} from '../src2d/lighting.js';
+import {humanSprite} from '../src2d/human.js';
+import {cinemaState,cinemaDuration,EARTH_TIMELINE} from '../src2d/cinematic.js';
+
+const tick=(sim,n=60,input={})=>{for(let i=0;i<n;i++)sim.tick(1/60,input);};
+function flat(){const sim=new Simulation();sim.world.tiles.fill(0);for(let y=100;y<105;y++)for(let x=0;x<WIDTH;x++)sim.world.tiles[y*WIDTH+x]=BLOCK.ROCK;Object.assign(sim.s.player,{x:1000,y:800-34,vx:0,vy:0,grounded:true});return sim;}
+function stock(sim){sim.s.inventory.regolith=200;sim.s.inventory.iron=100;sim.s.inventory.ice=10;sim.s.resources.energy=100;sim.s.resources.water=100;sim.s.player.x=35*16;}
+function connected(c){const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data,seen=new Set(),sizes=[];for(let i=0;i<c.width*c.height;i++){if(!d[i*4+3]||seen.has(i))continue;const q=[i];seen.add(i);for(let j=0;j<q.length;j++){const n=q[j],x=n%c.width,y=Math.floor(n/c.width);for(const[xx,yy]of[[x-1,y],[x+1,y],[x,y-1],[x,y+1]]){const p=yy*c.width+xx;if(xx>=0&&xx<c.width&&yy>=0&&yy<c.height&&d[p*4+3]&&!seen.has(p)){seen.add(p);q.push(p);}}}sizes.push(q.length);}return Math.max(...sizes)/seen.size;}
+
+test('three solar recipes produce carried items, respect research and never auto-deploy',()=>{
+ const sim=new Simulation();stock(sim);assert.equal(sim.craft('panel2').ok,false);assert.equal(sim.craft('panel3').ok,false);sim.s.flags.analyzed=true;sim.s.flags.marsAnalyzed=true;
+ for(const id of['panel','panel2','panel3']){const recipe=RECIPES[id],before={...sim.s.inventory},energy=sim.s.resources.energy;assert.equal(sim.craft(id).ok,true);assert.equal(sim.s.inventory[recipe.output],before[recipe.output]+1);assert.equal(sim.s.inventory.iron,before.iron-recipe.cost.iron);assert.equal(sim.s.resources.energy,energy-recipe.cost.energy);assert.equal(sim.s.solarPanels.length,0);}
+});
+test('manual deployment validates reach, supports, free space and consumes only on success',()=>{
+ const sim=flat();sim.s.inventory.panels=2;assert.equal(sim.placeCrafted('panels',2000,800).ok,false);assert.equal(sim.s.inventory.panels,2);assert.equal(sim.placeCrafted('panels',1056,800).ok,true);assert.equal(sim.s.inventory.panels,1);assert.equal(sim.s.solarPanels.length,1);assert.equal(sim.placeCrafted('panels',1056,800).ok,false);assert.equal(sim.s.inventory.panels,1);sim.s.player.x=1080;sim.world.set(142,93,BLOCK.ROCK);assert.equal(sim.placeCrafted('panels',1136,800).ok,false);assert.equal(sim.s.inventory.panels,1);
+});
+test('higher panel levels generate more and the existing solar field recharges slightly faster',()=>{
+ const gains=[];for(let tier=1;tier<=3;tier++){const sim=flat();sim.s.solarPanels.push({planet:'moon',x:1050,tier});sim.s.resources.energy=20;tick(sim);gains.push(sim.s.resources.energy-20);assert.ok(Math.abs(gains.at(-1)-(PANEL_POWER[tier]-.012))<1e-8);}assert.ok(gains[2]>gains[1]&&gains[1]>gains[0]);const sim=new Simulation();sim.s.flags.baseOnline=sim.s.flags.solarOnline=true;sim.s.resources.energy=20;tick(sim);assert.ok(Math.abs(sim.s.resources.energy-20-.065)<1e-8);
+});
+test('manual placement cannot pass through walls or deploy outside with the suit removed',()=>{
+ const sim=flat();sim.s.inventory.beacons=1;for(let y=94;y<100;y++)sim.world.set(129,y,BLOCK.ROCK);assert.equal(sim.placeCrafted('beacons',1064,800).ok,false);assert.equal(sim.s.inventory.beacons,1);for(let y=94;y<100;y++)sim.world.set(129,y,BLOCK.AIR);sim.s.equipment.suited=false;assert.equal(sim.placeCrafted('beacons',1064,800).ok,false);sim.s.equipment.suited=true;assert.equal(sim.placeCrafted('beacons',1064,800).ok,true);
+});
+test('craftable lamps and beacons fit underground while a solar panel requires an exposed surface',()=>{
+ const sim=flat();for(let x=120;x<150;x++)sim.world.tiles[80*WIDTH+x]=BLOCK.ROCK;sim.s.inventory.panels=1;sim.s.inventory.lamps=1;sim.s.inventory.beacons=1;assert.equal(sim.previewPlacement('panels',1056,800).ok,false);assert.equal(sim.placeCrafted('lamps',1056,800).ok,true);assert.equal(sim.s.inventory.lamps,0);assert.equal(sim.s.fixtures[0].type,'lamp');tick(sim,120);assert.ok(sim.s.fixtures[0].charge<100&&sim.s.fixtures[0].charge>99);sim.s.player.x=1090;assert.equal(sim.placeCrafted('beacons',1144,800).ok,true);
+});
+test('batteries store less energy than their manufacture costs, and kits are single use',()=>{
+ const sim=new Simulation();stock(sim);const initial=sim.s.resources.energy;assert.equal(sim.craft('battery').ok,true);assert.equal(sim.s.resources.energy,initial-20);assert.equal(sim.use('batteries').ok,true);assert.equal(sim.s.resources.energy,initial-2);assert.equal(sim.s.inventory.batteries,0);assert.equal(sim.use('batteries').ok,false);sim.s.resources.health=60;assert.equal(sim.craft('repair').ok,true);const water=sim.s.resources.water;assert.equal(sim.use('repairKits').ok,true);assert.equal(sim.s.resources.health,90);assert.equal(sim.s.inventory.repairKits,0);assert.equal(sim.s.resources.water,water);
+});
+test('suit removal needs a powered habitat and blocks exits until the suit is equipped',()=>{
+ const sim=new Simulation();assert.equal(sim.toggleSuit().ok,false);sim.s.player.x=42*16;assert.equal(sim.interact(),'locked');assert.ok(sim.s.log.at(-1).includes('soporte vital'));sim.s.player.x=26*16;sim.s.flags.baseOnline=true;assert.equal(sim.toggleSuit().ok,true);assert.equal(sim.s.equipment.suited,false);tick(sim,480,{axis:1});assert.ok(sim.s.player.x<44*16);assert.ok(sim.s.log.filter(x=>x.includes('Ponte el traje')).length<5);assert.equal(sim.toggleSuit().ok,true);tick(sim,180,{axis:1});assert.ok(sim.s.player.x>44*16);assert.equal(sim.toggleSuit().ok,false);
+});
+test('civilian sprites lose the helmet visibly while keeping body and limbs connected',async()=>{
+ const previous=globalThis.document;globalThis.document={createElement:()=>createCanvas(1,1)};try{const art={human:await loadImage('assets/pixel/humans/astro.png')},profile=createState().profile;for(const frame of[0,1,2,4,8,10,17,'jump0','fall1','land0']){const civil=humanSprite(art,profile,frame,false),suit=humanSprite(art,profile,frame,true);assert.notDeepEqual(civil.toBuffer('image/png'),suit.toBuffer('image/png'));assert.ok(connected(civil)>.95,String(frame));const data=civil.getContext('2d').getImageData(0,0,32,3).data;assert.equal([...data].filter((v,i)=>i%4===3&&v>0).length,0,'helmet remains above the head');}}finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
+});
+test('darkness has a continuous depth ramp and fades over time in both directions',()=>{
+ assert.equal(darknessAtDepth(0),0);assert.equal(darknessAtDepth(6),0);assert.ok(darknessAtDepth(6.01)<.000001);let last=0;for(let depth=6;depth<=180;depth++){const next=darknessAtDepth(depth);assert.ok(next>=last&&next-last<.012);last=next;}
+ const previous=globalThis.document;globalThis.document={createElement:()=>createCanvas(1,1)};try{const c=createCanvas(320,220),ctx=c.getContext('2d'),sim=flat(),light=new CaveLighting(),cam={x:900,y:700};light.draw(ctx,320,220,sim,cam,1/60);assert.ok(light.amount>0&&light.amount<.08);const initial=light.amount;for(let i=0;i<120;i++)light.draw(ctx,320,220,sim,cam,1/60);assert.ok(light.amount>initial+.8);const mask=light.mask;sim.s.player.y=0;const before=light.amount;light.draw(ctx,320,220,sim,cam,1/60);assert.ok(light.amount<before&&light.amount>0);assert.equal(light.mask,mask);}finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
+});
+test('a charged placed lamp actually opens a pool of light away from the suit',()=>{
+ const previous=globalThis.document;globalThis.document={createElement:()=>createCanvas(1,1)};try{const sim=flat();sim.s.player.x=1080;sim.s.inventory.lamps=1;assert.equal(sim.placeCrafted('lamps',1136,800).ok,true);sim.s.player.x=1000;const fixtures=sim.s.fixtures;sim.s.fixtures=[];const canvas=createCanvas(320,220),c=canvas.getContext('2d'),light=new CaveLighting(),cam={x:900,y:700};const frame=()=>{c.fillStyle='#ffffff';c.fillRect(0,0,320,220);light.draw(c,320,220,sim,cam,.1);};for(let i=0;i<30;i++)frame();const before=c.getImageData(236,88,1,1).data[0];sim.s.fixtures=fixtures;frame();const after=c.getImageData(236,88,1,1).data[0];assert.ok(after>before+120);}finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
+});
+test('new mineral veins have nonrectangular connected bodies; older generator versions remain exact',()=>{
+ const s=createState({},134),w=new PixelWorld('moon',{},worldOptions(s));assert.equal(w.version,3);const seen=new Set(),areas=[];for(let y=80;y<165;y++)for(let x=2;x<WIDTH-2;x++){const key=y*WIDTH+x;if(w.tiles[key]!==BLOCK.IRON||seen.has(key))continue;const q=[key];seen.add(key);let minX=x,maxX=x,minY=y,maxY=y;for(let i=0;i<q.length;i++){const n=q[i],xx=n%WIDTH,yy=Math.floor(n/WIDTH);minX=Math.min(minX,xx);maxX=Math.max(maxX,xx);minY=Math.min(minY,yy);maxY=Math.max(maxY,yy);for(const a of[n-1,n+1,n-WIDTH,n+WIDTH])if(a>=0&&a<w.tiles.length&&w.tiles[a]===BLOCK.IRON&&!seen.has(a)){seen.add(a);q.push(a);}}if(q.length>12)areas.push({size:q.length,fill:q.length/((maxX-minX+1)*(maxY-minY+1))});}assert.ok(areas.length>15);assert.ok(areas.some(a=>a.size>40&&a.fill<.8));assert.ok(new Set(areas.map(a=>a.size)).size>10);s.worldVersion=2;const old=new PixelWorld('moon',{},worldOptions(s)),loaded=new Simulation(restoreState(s));assert.equal(loaded.world.version,2);assert.deepEqual(loaded.world.tiles,old.tiles);assert.notDeepEqual(old.tiles,w.tiles);
+});
+test('discoveries and survey beacon gate the report and Earth return with paid, single-use research',()=>{
+ const s=createState();s.planet='mars';s.flags.marsUnlocked=s.flags.marsOnline=s.flags.marsAnalyzed=true;const sim=new Simulation(s);stock(sim);assert.equal(sim.craft('returnModule').ok,false);assert.equal(objective(s).step,11);assert.equal(sim.craft('beacon').ok,true);
+ for(const site of discoverySites(sim.world)){Object.assign(s.player,{x:site.x-6,y:site.y+8-34});assert.equal(sim.interact(),'discovery');const ice=s.inventory.ice;sim.interact();assert.equal(s.inventory.ice,ice);}
+ assert.equal(s.discoveries.length,3);assert.equal(hasSurveyBeacon(s),false);const last=discoverySites(sim.world).at(-1),x=last.x+28;assert.equal(sim.placeCrafted('beacons',x,sim.world.groundY(x)).ok,true);assert.equal(hasSurveyBeacon(s),true);
+ Object.assign(s.player,{x:30*16,y:33*16-34});const water=s.resources.water,power=s.resources.energy;assert.equal(sim.interact(),'report');assert.equal(s.resources.water,water-4);assert.equal(s.resources.energy,power-12);assert.equal(sim.interact(),'lab');assert.equal(s.resources.water,water-4);s.player.x=35*16;assert.equal(sim.craft('returnModule').ok,true);assert.equal(sim.arriveEarth(),false);s.player.x=16*16;assert.equal(sim.interact(),'return');assert.equal(sim.arriveEarth(),true);assert.equal(sim.arriveEarth(),false);assert.ok(objective(s).complete);assert.ok(restoreState(JSON.parse(JSON.stringify(s))).flags.returnedEarth);
+});
+test('placed tiers, finite lamp charge, clothing, crafted items and discovery log survive save/load',()=>{
+ const s=createState({},742);s.flags.baseOnline=true;s.equipment.suited=false;s.inventory.panel2=2;s.inventory.batteries=1;s.solarPanels=[{planet:'moon',x:1100,tier:3}];s.fixtures=[{type:'lamp',planet:'moon',x:1220,y:600,charge:37},{type:'beacon',planet:'mars',x:160*16,y:600,charge:0}];s.discoveries=['mars-ice'];const saved=restoreState(JSON.parse(JSON.stringify(s)));assert.equal(saved.worldVersion,3);assert.equal(saved.equipment.suited,false);assert.equal(saved.inventory.panel2,2);assert.equal(saved.inventory.batteries,1);assert.equal(saved.solarPanels[0].tier,3);assert.equal(saved.fixtures[0].charge,37);assert.deepEqual(saved.discoveries,['mars-ice']);
+});
+test('return cinematic includes Mars ascent, orbit, transfer, reentry and parachute splashdown',()=>{
+ assert.deepEqual(EARTH_TIMELINE.map(s=>s[0]),['launch','orbit','transfer','reentry','landing']);for(let i=1;i<EARTH_TIMELINE.length;i++)assert.equal(EARTH_TIMELINE[i-1][2],EARTH_TIMELINE[i][1]);assert.equal(cinemaDuration('earth'),26);assert.equal(cinemaState(18,'earth').phase,'reentry');assert.equal(cinemaState(24,'earth').phase,'landing');assert.equal(cinemaDuration('moon'),35);assert.equal(cinemaDuration('mars'),21);
+});

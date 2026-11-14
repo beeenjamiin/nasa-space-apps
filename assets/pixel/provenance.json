@@ -1,0 +1,116 @@
+{
+  "author": "Kenney",
+  "pack": "Pixel Platformer 1.2",
+  "license": "CC0-1.0",
+  "primarySource": "https://kenney.nl/assets/pixel-platformer",
+  "distributionMirror": "https://github.com/ar-bh/basic-2d-platformer/tree/main/addons/basic_2d_platformer/assets/kenney_pixel-platformer",
+  "notes": "Only the Kenney asset directory is used; no game source or code from the mirror is copied. Original downloaded PNG bytes unchanged.",
+  "verifiedAt": "2026-11-14",
+  "files": [
+    {
+      "file": "kenney-tiles.png",
+      "download": "https://raw.githubusercontent.com/ar-bh/basic-2d-platformer/main/addons/basic_2d_platformer/assets/kenney_pixel-platformer/Tilemap/tilemap_packed.png",
+      "bytes": 5913,
+      "sha256": "a3bbff36594baa36c803a67e9152a20a80f2faeb3c22ca84ac06e0a70f56553d"
+    },
+    {
+      "file": "kenney-characters.png",
+      "download": "https://raw.githubusercontent.com/ar-bh/basic-2d-platformer/main/addons/basic_2d_platformer/assets/kenney_pixel-platformer/Tilemap/tilemap-characters_packed.png",
+      "bytes": 1990,
+      "sha256": "22622d54dfc9d85346c9b75b999c8604e6eb336e42c4708bcf8b21094d8a2dad"
+    },
+    {
+      "file": "kenney-backgrounds.png",
+      "download": "https://raw.githubusercontent.com/ar-bh/basic-2d-platformer/main/addons/basic_2d_platformer/assets/kenney_pixel-platformer/Tilemap/tilemap-backgrounds_packed.png",
+      "bytes": 521,
+      "sha256": "bdd858c244a28805f159b527e7634e414c1bf7d3eeb709379ee2e286cb87b8f3"
+    },
+    {
+      "file": "KENNEY-LICENSE.txt",
+      "download": "https://raw.githubusercontent.com/ar-bh/basic-2d-platformer/main/addons/basic_2d_platformer/assets/kenney_pixel-platformer/License.txt",
+      "bytes": 683,
+      "sha256": "5fb887ca3f56b2501e41da7df4bbf0e38a428c0c23b48816a02b1cb90c726d8c"
+    }
+  ],
+  "sheets": {
+    "kenney-tiles.png": {
+      "width": 360,
+      "height": 162,
+      "tileWidth": 18,
+      "tileHeight": 18,
+      "columns": 20,
+      "rows": 9,
+      "spacing": 0
+    },
+    "kenney-characters.png": {
+      "width": 216,
+      "height": 72,
+      "tileWidth": 24,
+      "tileHeight": 24,
+      "columns": 9,
+      "rows": 3,
+      "spacing": 0
+    },
+    "kenney-backgrounds.png": {
+      "width": 192,
+      "height": 72,
+      "tileWidth": 24,
+      "tileHeight": 24,
+      "columns": 8,
+      "rows": 3,
+      "spacing": 0
+    }
+  },
+  "astronauts": {
+    "green": {
+      "idle": [
+        0,
+        0
+      ],
+      "walk": [
+        1,
+        0
+      ]
+    },
+    "blue": {
+      "idle": [
+        2,
+        0
+      ],
+      "walk": [
+        3,
+        0
+      ]
+    },
+    "pink": {
+      "idle": [
+        4,
+        0
+      ],
+      "walk": [
+        5,
+        0
+      ]
+    },
+    "gold": {
+      "idle": [
+        6,
+        0
+      ],
+      "walk": [
+        7,
+        0
+      ]
+    },
+    "tan": {
+      "idle": [
+        0,
+        1
+      ],
+      "walk": [
+        1,
+        1
+      ]
+    }
+  }
+}

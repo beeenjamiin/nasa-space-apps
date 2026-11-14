@@ -1,0 +1,317 @@
+{
+  "schemaVersion": 1,
+  "verifiedOn": "2026-11-14",
+  "language": "es",
+  "mode": "referencias_oficiales_locales",
+  "liveData": false,
+  "notice": "Referencias NASA consultadas y seleccionadas para una simulación educativa. No se consultan datos en tiempo real ni se presenta el juego como una misión NASA real.",
+  "sources": [
+    {
+      "id": "moon-gravity",
+      "title": "Moon — NASA Glenn Research Center",
+      "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/moon/",
+      "organization": "NASA Glenn Research Center",
+      "classification": "referencia_cientifica_oficial_educativa",
+      "supports": [
+        "gravedad lunar aproximada de 1,62 m/s²",
+        "ausencia de una atmósfera apreciable y de frenado aerodinámico lunar"
+      ]
+    },
+    {
+      "id": "moon-atmosphere",
+      "title": "Moon Facts — NASA Science",
+      "url": "https://science.nasa.gov/moon/facts/",
+      "organization": "NASA Science",
+      "classification": "referencia_cientifica_oficial_educativa",
+      "supports": [
+        "exosfera lunar extremadamente tenue y no respirable",
+        "superficie rocosa marcada por impactos"
+      ]
+    },
+    {
+      "id": "mars-gravity",
+      "title": "A Study of Past, Present, and Future Mars Rotorcraft",
+      "url": "https://ntrs.nasa.gov/citations/20210000448",
+      "documentUrl": "https://ntrs.nasa.gov/api/citations/20210000448/downloads/1459_Radotich_011321.pdf",
+      "organization": "NASA Ames Research Center / NASA Technical Reports Server",
+      "publicationYear": 2021,
+      "classification": "publicacion_tecnica_oficial_de_referencia",
+      "supports": [
+        "el texto técnico cita una aceleración gravitacional de Marte de 3,71 m/s²"
+      ],
+      "verification": "Se descargó y extrajo el texto del PDF; aparece explícitamente 3.71 m/s2. Es una referencia publicada, no una medición en tiempo real."
+    },
+    {
+      "id": "mars-gravity-mean",
+      "title": "Mars Fact Sheet",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html",
+      "organization": "NASA Goddard / NSSDC",
+      "classification": "tabla_cientifica_oficial_de_referencia",
+      "supports": [
+        "la tabla distingue gravedad superficial media y publica 3,73 m/s²"
+      ],
+      "note": "Se incluye para evitar presentar 3,71 m/s² como un valor exacto y universal para toda ubicación o convención de gravedad marciana."
+    },
+    {
+      "id": "mars-atmosphere",
+      "title": "Mars: Facts — NASA Science",
+      "url": "https://science.nasa.gov/mars/facts/",
+      "organization": "NASA Science",
+      "classification": "referencia_cientifica_oficial_educativa",
+      "supports": [
+        "atmósfera marciana tenue, principalmente dióxido de carbono, nitrógeno y argón",
+        "polvo atmosférico y tormentas de polvo"
+      ]
+    },
+    {
+      "id": "mars-human-safety",
+      "title": "What Is Mars? (Grades 5–8)",
+      "url": "https://www.nasa.gov/solar-system/what-is-mars-grades-5-8/",
+      "organization": "NASA",
+      "classification": "referencia_cientifica_oficial_educativa",
+      "supports": [
+        "más del 95 % de dióxido de carbono y mucho menos del 1 % de oxígeno en la atmósfera marciana"
+      ],
+      "note": "La composición y la baja presión no permiten respirar sin soporte vital; tener atmósfera no significa tener aire respirable."
+    },
+    {
+      "id": "eclss",
+      "title": "Environmental Control and Life Support Systems (ECLSS)",
+      "url": "https://www.nasa.gov/reference/environmental-control-and-life-support-systems-eclss/",
+      "organization": "NASA",
+      "classification": "documentacion_oficial_de_ingenieria",
+      "supports": [
+        "control de presión, oxígeno, ventilación y agua",
+        "recuperación y tratamiento de aguas residuales y humedad",
+        "sistemas de recuperación de agua, revitalización del aire y generación de oxígeno"
+      ]
+    },
+    {
+      "id": "eclss-electricity",
+      "title": "Recycling Water and Air — Houston We Have a Podcast",
+      "url": "https://www.nasa.gov/podcasts/houston-we-have-a-podcast/recycling-water-and-air/",
+      "organization": "NASA Johnson Space Center",
+      "classification": "entrevista_tecnica_oficial_con_transcripcion",
+      "supports": [
+        "la generación de oxígeno por electrólisis separa agua en hidrógeno y oxígeno mediante energía eléctrica"
+      ],
+      "note": "Se utiliza la relación cualitativa agua + electricidad → oxígeno; no se extraen consumos de potencia ni rendimientos numéricos para el juego."
+    },
+    {
+      "id": "donki",
+      "title": "DONKI — NASA Community Coordinated Modeling Center",
+      "url": "https://ccmc.gsfc.nasa.gov/tools/DONKI/",
+      "organization": "NASA CCMC",
+      "classification": "documentacion_oficial",
+      "supports": [
+        "base de datos de eventos de clima espacial"
+      ],
+      "note": "Solo referencia educativa. Este prototipo no consulta la API ni usa avisos actuales."
+    },
+    {
+      "id": "radiation-shelter",
+      "title": "NASA-STD-3001 Technical Brief: Radiation Protection",
+      "url": "https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-020-radiation-protection.pdf",
+      "organization": "NASA OCHMO",
+      "classification": "documentacion_oficial_de_ingenieria",
+      "supports": [
+        "refugios para eventos de partículas solares y atenuación mediante materiales"
+      ],
+      "note": "Las fracciones y el índice de exposición del juego no son dosis ni diseños certificados."
+    },
+    {
+      "id": "osdr-veg05",
+      "title": "NASA OSDR: VEG-05",
+      "url": "https://osdr.nasa.gov/bio/repo/data/payloads/VEG-05",
+      "organization": "NASA OSDR",
+      "classification": "referencia_de_investigacion_biologica",
+      "supports": [
+        "investigación de cultivos, calidad de luz, fertilización y seguridad alimentaria en el espacio"
+      ],
+      "note": "No se importan resultados experimentales ni series de datos. No valida un ciclo de cultivo de doce segundos."
+    },
+    {
+      "id": "plants",
+      "title": "Growing Plants in Space — NASA",
+      "url": "https://www.nasa.gov/exploration-research-and-technology/growing-plants-in-space/",
+      "organization": "NASA",
+      "classification": "referencia_cientifica_oficial_educativa",
+      "supports": [
+        "agua, iluminación y nutrientes en sistemas de cultivo espacial"
+      ]
+    },
+    {
+      "id": "lunar-exhaust",
+      "title": "Rocket Exhaust on the Moon: NASA Supercomputers Reveal Surface Effects",
+      "url": "https://www.nasa.gov/general/rocket-exhaust-on-the-moon-nasa-supercomputers-reveal-surface-effects/",
+      "organization": "NASA",
+      "classification": "referencia_cientifica_oficial_educativa",
+      "supports": [
+        "interacción del escape con regolito en baja gravedad y sin atmósfera"
+      ],
+      "note": "Llama, tamaños y velocidades son decisiones artísticas. El polvo se aproxima con trayectorias balísticas, sin humo terrestre."
+    },
+    {
+      "id": "mars-layers",
+      "title": "Sedimentary Signs of a Martian Lakebed — NASA Science",
+      "url": "https://science.nasa.gov/resource/sedimentary-signs-of-a-martian-lakebed-2/?site=msl",
+      "organization": "NASA",
+      "classification": "referencia_geologica_oficial",
+      "supports": [
+        "las capas sedimentarias registran ambientes antiguos en Marte"
+      ],
+      "note": "Referencia de Curiosity; el afloramiento del juego es ficticio."
+    },
+    {
+      "id": "mars-water",
+      "title": "Evidence for Ancient Water on Mars — NASA Astrobiology",
+      "url": "https://astrobiology.nasa.gov/news/evidence-for-ancient-water-on-mars/",
+      "organization": "NASA",
+      "classification": "referencia_geologica_oficial",
+      "supports": [
+        "investigar minerales alterados por agua puede aportar pistas del pasado"
+      ],
+      "note": "No significa que se haya descubierto vida ni agua potable en el juego."
+    },
+    {
+      "id": "mars-ice",
+      "title": "NASA Is Locating Ice on Mars With This New Map",
+      "url": "https://www.nasa.gov/solar-system/nasa-is-locating-ice-on-mars-with-this-new-map/",
+      "organization": "NASA JPL",
+      "classification": "referencia_oficial_de_cartografia",
+      "supports": [
+        "hielo del subsuelo como recurso potencial y cartografía con observaciones orbitales"
+      ],
+      "note": "No se importan mapas SWIM. Lugar, cantidad y profundidad del hielo jugable son parámetros ficticios."
+    }
+  ],
+  "verifiedFacts": [
+    {
+      "id": "moon-gravity",
+      "classification": "dato_cientifico_verificado_aproximado",
+      "value": 1.62,
+      "unit": "m/s²",
+      "sourceIds": [
+        "moon-gravity"
+      ],
+      "childMessage": "En la Luna la gravedad es menor que en la Tierra: un salto con el mismo impulso tarda más en volver al suelo."
+    },
+    {
+      "id": "mars-gravity",
+      "classification": "dato_cientifico_verificado_aproximado",
+      "value": 3.71,
+      "unit": "m/s²",
+      "sourceIds": [
+        "mars-gravity",
+        "mars-gravity-mean"
+      ],
+      "note": "Valor de referencia usado en el informe técnico de 2021. Otra tabla NASA indica 3,73 para la media superficial. La simulación emplea una gravedad constante aproximada, sin variaciones locales.",
+      "childMessage": "Marte atrae más fuerte que la Luna. Con el mismo impulso, tu salto será más bajo."
+    },
+    {
+      "id": "moon-exosphere",
+      "classification": "hecho_cientifico_verificado",
+      "sourceIds": [
+        "moon-atmosphere"
+      ],
+      "value": "exosfera extremadamente tenue y no respirable",
+      "childMessage": "La Luna no tiene aire que puedas respirar. En el exterior necesitas traje y oxígeno.",
+      "designConstraint": "Representar el vacío como aproximación jugable: sin nubes, lluvia ni viento atmosférico terrestre. El polvo levantado por contacto puede seguir trayectorias balísticas; no debe ondear como en el viento."
+    },
+    {
+      "id": "mars-atmosphere",
+      "classification": "hecho_cientifico_verificado",
+      "sourceIds": [
+        "mars-atmosphere",
+        "mars-human-safety"
+      ],
+      "value": "atmósfera tenue y no respirable, dominada por dióxido de carbono",
+      "childMessage": "Marte sí tiene una atmósfera, pero no sirve para respirar. Tu traje sigue siendo necesario.",
+      "designConstraint": "El cielo y el polvo pueden diferenciarse de la Luna. No hacer que la atmósfera marciana recargue el oxígeno del traje automáticamente."
+    },
+    {
+      "id": "water-recycling",
+      "classification": "relacion_de_ingenieria_verificada",
+      "sourceIds": [
+        "eclss"
+      ],
+      "value": "los sistemas de soporte vital recuperan y tratan agua usada; no crean agua ilimitada",
+      "childMessage": "Reciclar ayuda a conservar el agua. Las máquinas deben funcionar y el agua debe limpiarse antes de reutilizarla.",
+      "designConstraint": "Limitar el inventario de agua y requerir sistemas operativos. No asignar un porcentaje NASA de recuperación a una instalación ficticia sin modelar sus condiciones."
+    },
+    {
+      "id": "oxygen-generation",
+      "classification": "relacion_de_ingenieria_verificada",
+      "sourceIds": [
+        "eclss",
+        "eclss-electricity"
+      ],
+      "value": "producir oxígeno por electrólisis requiere agua y electricidad",
+      "childMessage": "La máquina puede separar agua para obtener oxígeno, pero necesita electricidad. Debes cuidar las dos reservas.",
+      "designConstraint": "La producción de oxígeno consume recursos; las tasas, capacidades y costes del prototipo son parámetros de simulación."
+    },
+    {
+      "id": "radiation-training",
+      "classification": "relacion_fisica_con_parametros_de_simulacion",
+      "sourceIds": [
+        "radiation-shelter",
+        "donki"
+      ],
+      "value": "el refugio con materiales reduce la exposición a partículas; no la anula",
+      "childMessage": "Busca refugio. Reforzarlo gasta materiales que también necesitas para construir.",
+      "designConstraint": "El aviso es un ejercicio programado, no un dato DONKI actual; índice sin unidades, sin espectros ni dosis clínicas."
+    },
+    {
+      "id": "food-growth",
+      "classification": "relacion_biologica_con_parametros_de_simulacion",
+      "sourceIds": [
+        "osdr-veg05",
+        "plants"
+      ],
+      "value": "cultivar en un sistema cerrado requiere iluminación, agua y nutrientes",
+      "childMessage": "Puedes cultivar comida, pero necesitas semillas, agua y electricidad. Si se corta la energía, el crecimiento se pausa.",
+      "designConstraint": "Ciclo y rendimiento ficticios: no simular crecimiento real en 12 segundos. Las semillas son limitadas."
+    },
+    {
+      "id": "exhaust-dust",
+      "classification": "aproximacion_visual_fundamentada",
+      "sourceIds": [
+        "lunar-exhaust",
+        "moon-atmosphere"
+      ],
+      "value": "la baja gravedad y la ausencia de atmósfera afectan el polvo levantado por motores",
+      "childMessage": "En la Tierra el humo se mezcla con aire; en la Luna los granos de polvo vuelven al suelo por la gravedad.",
+      "designConstraint": "No dibujar humo atmosférico ascendente sobre la Luna. El escape del motor sí existe en vacío."
+    }
+  ],
+  "simulationParameters": {
+    "classification": "parametros_simplificados_del_juego",
+    "scientificMeasurements": false,
+    "examples": [
+      "conversión de metros a píxeles",
+      "velocidad de caminar y potencia de salto",
+      "capacidad de las barras de oxígeno y energía",
+      "consumo por segundo de juego",
+      "costes de fabricación y cantidades de minerales",
+      "rendimiento de paneles solares y recicladores ficticios",
+      "duración comprimida de viajes y cinemáticas",
+      "condiciones para desbloquear Marte",
+      "índice de exposición y fracciones de atenuación del refugio",
+      "calendario del simulacro de partículas solares",
+      "nutrición, semillas y rendimiento de cosechas",
+      "versiones del generador de vetas y mapa ficticio",
+      "niveles y producción de paneles solares",
+      "cargas de lámparas y baterías portátiles",
+      "recompensa única de hielo y materiales del regreso a la Tierra"
+    ],
+    "note": "Estos valores se eligen para aprender y jugar. No representan autonomía real de un traje, reservas de una misión ni tiempos reales de viaje Tierra–Luna o Luna–Marte."
+  },
+  "historicalData": {
+    "included": false,
+    "note": "El informe técnico fechado en 2021 es una publicación de referencia; este JSON no contiene series históricas de clima espacial ni telemetría de misiones."
+  },
+  "apiIntegration": {
+    "enabled": false,
+    "note": "No hay endpoints ni campos de respuesta inventados. El juego puede mostrar estas referencias sin conectarse a servicios externos."
+  }
+}
