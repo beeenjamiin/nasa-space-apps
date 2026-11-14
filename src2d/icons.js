@@ -1,6 +1,8 @@
+import {drawRover} from './gameplay-view.js';
 import {rockSprite} from './decor.js';
 export function itemIcon(kind){const canvas=document.createElement('canvas');canvas.width=canvas.height=24;const c=canvas.getContext('2d');c.imageSmoothingEnabled=false;const r=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(x,y,w,h);},ink='#131620';
  if(kind==='rations')kind='ration';if(kind==='samples')kind='sample';
+ if(kind==='rovers'){c.save();c.scale(.5,.5);drawRover(c,{x:0,y:18,vx:0,facing:1});c.restore();}
  if(kind==='pick'){for(let i=0;i<13;i++){r(5+i,18-i,4,4,ink);r(6+i,18-i,2,2,'#9f744d');}r(6,3,13,4,ink);r(3,6,16,4,ink);r(3,6,3,7,ink);r(6,4,11,2,'#bdc7bb');r(4,7,13,2,'#7f9296');r(4,9,2,3,'#7f9296');}
  if(kind==='regolith')c.drawImage(rockSprite('moon',1),1,5);
  if(kind==='iron'){r(5,6,14,14,ink);r(3,9,17,8,ink);r(6,7,11,12,'#9e7156');r(4,10,14,5,'#bc915f');r(7,8,4,4,'#efd296');r(13,13,4,4,'#e1ba7c');}

@@ -1,0 +1,22 @@
+.map-button{font-size:14px;gap:2px}.map-button span{display:block;font-size:6px}
+.context-prompt{bottom:180px}
+#placement-banner:not(.hidden)~#context-prompt{display:none}
+.selected-block-label{margin:0 auto 7px;padding:5px 9px;background:#141e16df;color:#e0d5a9;font:8px/1.5 Silkscreen,monospace;width:max-content;max-width:95vw}
+.material-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.material-choices button{display:flex;align-items:center;gap:9px;padding:9px;min-width:0;text-align:left;font:11px/1.5 ui-monospace,monospace}
+.material-choices button[aria-pressed=true]{border-color:#e8ca8b;background:#45472e}
+.material-choices canvas{width:24px;height:24px;flex-shrink:0}.material-choices p{grid-column:1/-1}
+#map-dialog{width:min(1000px,94vw);max-height:92dvh;padding:22px;overscroll-behavior:contain}
+.map-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.map-header h2{font-size:20px;margin:0}.map-header .eyebrow{margin:0 0 7px;font-size:8px}
+#map-canvas{display:block;width:100%;height:auto;background:#101b22;border:1px solid #6d806c;cursor:crosshair;touch-action:manipulation}
+.map-legend{font:9px/1.8 ui-monospace,monospace;color:#d1d5ba;overflow-wrap:anywhere}
+#map-navigation{font:12px/1.6 ui-monospace,monospace;color:#f0d49b;min-height:2em}
+.map-locations{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}.map-locations button{padding:9px 11px;font:11px/1.5 ui-monospace,monospace;min-height:44px}
+.gameplay-feedback{position:absolute;right:18px;top:155px;max-width:330px;padding:12px 15px;border:1px solid #d9a179;background:#382821ee;color:#ffe1b4;font:12px/1.6 ui-monospace,monospace;pointer-events:none}
+.damage-flash{position:fixed;inset:0;z-index:9;pointer-events:none;box-shadow:inset 0 0 0 0 transparent;transition:box-shadow .15s}
+.damage-flash.active{box-shadow:inset 0 0 35px 10px #c4534266}
+.rover-status{position:absolute;right:18px;bottom:145px;display:flex;align-items:center;gap:10px;background:#1d2524ef;border:1px solid #afa4c1;padding:7px 10px;font:10px/1.5 ui-monospace,monospace;max-width:95vw}
+.rover-status button{font-size:9px;padding:8px;min-height:44px}
+@media(pointer:coarse){.context-prompt{bottom:200px}}
+@media(max-width:700px){#map-dialog{padding:14px}.map-header h2{font-size:16px}.map-header .eyebrow{font-size:7px}.map-locations{gap:5px}.map-locations button{font-size:10px;padding:8px}.map-legend{font-size:8px}.gameplay-feedback{top:auto;bottom:245px;left:12px;right:12px;max-width:none;font-size:11px}.rover-status{bottom:208px;left:12px;right:12px;justify-content:space-between;font-size:10px}.selected-block-label{font-size:7px}.material-choices button{font-size:10px}}
+@media(max-height:520px) and (orientation:landscape){.context-prompt{bottom:100px}.selected-block-label{font-size:7px;margin-bottom:3px}.rover-status{bottom:85px;left:auto;right:12px;font-size:9px}.gameplay-feedback{top:60px;bottom:auto;left:auto;right:12px;max-width:290px}.map-header h2{font-size:16px}#map-dialog{padding:14px;max-height:94dvh}}

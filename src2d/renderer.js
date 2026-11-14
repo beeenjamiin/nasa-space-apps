@@ -73,6 +73,7 @@ export class Renderer{
 
   if(sim.lastBoostAt!==undefined&&s.elapsed-sim.lastBoostAt<.22){for(let i=0;i<4;i++)rect(c,px+(p.facing>0?7:20),py+14+i*3,3,i%2?2:3,i%2?'#dc9a59':'#f0d49b');}
   if(sim.mining){const m=sim.mining,x=m.tx*TILE-cam.x,y=m.ty*TILE-cam.y,k=m.elapsed/m.needed;c.strokeStyle='#f4d99c';c.lineWidth=1;c.strokeRect(Math.round(x),Math.round(y),8,8);rect(c,x,y-4,8,2,'#152032');rect(c,x,y-4,Math.ceil(k*8),2,'#edc47e');rect(c,x+3,y+2,1,4,'#172333');if(k>.5)rect(c,x+2,y+4,4,1,'#172333');}
+  if(this.blockPlacementPreview){const b=this.blockPlacementPreview;c.save();c.strokeStyle=b.ok?'#b8d8a2':'#e4a18a';c.lineWidth=1;c.strokeRect(Math.round(b.tx*TILE-cam.x),Math.round(b.ty*TILE-cam.y),TILE,TILE);c.restore();}
   this.particles.update(s.elapsed,sim);this.particles.draw(c,cam);
   drawGameplayWorld(c,sim,cam,time);
   this.caveLighting.draw(c,this.width,this.height,sim,cam,dt);

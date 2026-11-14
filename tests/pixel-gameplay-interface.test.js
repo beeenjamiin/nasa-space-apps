@@ -27,9 +27,13 @@ test('existing recipe/inventory/E/A-D/space controls build, deploy, draw and dri
   const deadline=Date.now()+3000;while(!w.__FRONTIER_DEBUG__&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,5));
   const game=w.__FRONTIER_DEBUG__;assert.ok(game,$('assets-status').textContent);
   $('new-game').click();$('creator-form').dispatchEvent(new w.Event('submit',{cancelable:true}));$('skip-cinema').click();advance(2);
+  key('KeyM');key('KeyM','keyup');assert.ok($('map-dialog').open,'one M press must leave the map open');
+  const mapTime=game.sim.s.elapsed;advance(10);assert.equal(game.sim.s.elapsed,mapTime,'map pauses the simulation');
+  key('KeyM');key('KeyM','keyup');assert.equal($('map-dialog').open,false);advance(2);assert.ok(game.sim.s.elapsed>mapTime);
   game.sim.s.flags.marsUnlocked=true;assert.equal(game.sim.arriveMars(),true);game.sim.s.flags.marsOnline=true;
   Object.assign(game.sim.s.player,{x:35*16,y:33*16-34,vx:0,vy:0});Object.assign(game.sim.s.inventory,{regolith:30,iron:10});
   $('inventory-button').click();w.document.querySelector('[data-recipe=rover]').click();assert.equal(game.sim.s.inventory.rovers,1);
+  assert.ok(native(w.document.querySelector('[data-item=rovers] canvas')).getContext('2d').getImageData(0,0,24,24).data.some((v,i)=>i%4===3&&v),'rover inventory icon is visible');
   const world=game.sim.world;let spot=null;
   for(let x=80*16;x<180*16&&!spot;x+=16){Object.assign(game.sim.s.player,{x,y:world.groundY(x)-34});const result=game.sim.use('rovers');if(result.ok)spot=x;}
   assert.ok(spot,'an exterior deployment location exists');

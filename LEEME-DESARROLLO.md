@@ -1,5 +1,10 @@
 # Frontera 2D v5: fabricar, explorar y volver a casa
 
+> Entrega integrada: mapa, selección de materiales, rover y avisos ya conectados.
+> Consulta `LEEME-EXPORTACION.md` para ejecutar el ZIP y sus pruebas en Chromium.
+> Las notas de versiones anteriores que indican ausencia de pruebas de navegador
+> describen aquellas entregas, no esta exportación.
+
 Esta versión conecta la fabricación con el inventario y la colocación manual, amplía la exploración marciana y cierra la expedición con el regreso a la Tierra. Conserva el soporte vital, la personalización, el pico mejorable, el salto y el ascenso de un solo bloque.
 
 ## Qué cambió y cómo usarlo

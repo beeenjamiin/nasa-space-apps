@@ -1,5 +1,10 @@
 # Mecánicas 2D: integración de Agente 1
 
+> En `release/orbita-frontera-2d` las conexiones de interfaz descritas como
+> pendientes en este documento ya están implementadas. Ver
+> `LEEME-EXPORTACION.md` y `src2d/expedition-ui.js`. El resto de este documento
+> conserva el contrato y alcance del commit original de mecánicas.
+
 Rama `feature/gameplay-2d`, basada en `7204799`. Worktree propio en
 `/workspace/nasa-space-apps-gameplay`; no se cambia la rama ni los archivos del
 checkout compartido. No se integra automáticamente en `main`.
