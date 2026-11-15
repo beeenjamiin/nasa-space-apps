@@ -13,20 +13,20 @@ def check(name,value):
  report['checks'].append(name)
 def state(page,code):return page.evaluate('()=>{const g=window.__FRONTIER_DEBUG__,sim=g.sim,s=sim.s;'+code+'}')
 def start(page):
- page.goto(args.url+'/index.html?debug');page.wait_for_function('window.__FRONTIER_DEBUG__');page.locator('#new-game').click();page.locator('#creator-form [type=submit]').click();check('preflight training opens',page.locator('#training-screen').is_visible())
- page.locator('#training-answers button').nth(1).click();check('wrong answer stays in training',page.locator('#training-feedback').inner_text()!='')
- for answer in [0,1,0]:
-  page.locator('#training-answers button').nth(answer).click()
-  if page.locator('#training-answers button').count():page.locator('#training-answers button').click()
- page.locator('#training-launch').click();check('preflight starts cinema',state(page,'return g.phase')=='cinematic');page.locator('#skip-cinema').click();check('landed into playable mission',state(page,'return g.phase')=='playing')
+ # Resume fixture produced by the real, separately verified eight-stage training flow.
+ saved=Path('test-results/training-browser/expedition.json')
+ if not saved.exists():raise RuntimeError('Run tools/training-browser.py successfully before the gameplay regression.')
+ page.goto(args.url+'/index.html?debug');page.wait_for_function('window.__FRONTIER_DEBUG__')
+ page.evaluate("s=>localStorage.setItem('orbita-frontier-save-v1',JSON.stringify(s))",json.loads(saved.read_text()))
+ page.reload();page.locator('#continue').click();check('approved astronaut resumes into mission',state(page,'return g.phase')=='playing')
 def overlaps(a,b):return a['x']<b['x']+b['width']-1 and a['x']+a['width']>b['x']+1 and a['y']<b['y']+b['height']-1 and a['y']+a['height']>b['y']+1
 with sync_playwright() as p:
  browser=p.chromium.launch(executable_path=os.environ.get('CHROMIUM_EXECUTABLE','/usr/bin/chromium'),headless=True,args=['--no-sandbox'])
  try:
   page=browser.new_page(viewport={'width':1366,'height':850});page.on('pageerror',lambda e:report['errors'].append(str(e)));start(page)
-  page.keyboard.down('KeyD');page.wait_for_timeout(950);page.keyboard.up('KeyD');check('walking advances tutorial',state(page,'return s.junior.training')==1)
-  page.keyboard.press('Space');page.wait_for_timeout(200);check('real jump advances tutorial',state(page,'return s.junior.training')==2)
-  page.keyboard.press('KeyM');check('map advances tutorial',state(page,'return s.junior.training')==3);check('map opens',page.locator('#map-dialog').is_visible());page.screenshot(path=str(out/'map.png'));page.keyboard.press('Escape')
+  before=state(page,'return s.player.x');page.keyboard.down('KeyD');page.wait_for_timeout(950);page.keyboard.up('KeyD');check('real walking after training',state(page,'return s.player.x')>before)
+  page.keyboard.press('Space');page.wait_for_timeout(200);check('real jump after training',state(page,'return !s.player.grounded'))
+  page.keyboard.press('KeyM');check('training approval persists',state(page,'return s.junior.training')==3);check('map opens',page.locator('#map-dialog').is_visible());page.screenshot(path=str(out/'map.png'));page.keyboard.press('Escape')
   page.keyboard.press('KeyH');check('HUD hides',page.locator('#play-ui').evaluate("el=>el.classList.contains('hud-hidden')"));page.locator('#hud-toggle').click();check('HUD restores',not page.locator('#play-ui').evaluate("el=>el.classList.contains('hud-hidden')"))
   page.keyboard.press('KeyI');check('backpack has no recipes',page.locator('#inventory-panel [data-recipe]').count()==0);page.screenshot(path=str(out/'backpack.png'))
   page.keyboard.press('KeyC');check('workshop opens exclusively',page.locator('#workshop-panel').is_visible() and not page.locator('#inventory-panel').is_visible())
@@ -40,14 +40,14 @@ with sync_playwright() as p:
   page.evaluate("()=>{const g=window.__FRONTIER_DEBUG__;window.__qaRender=g.renderer.render;g.renderer.render=()=>{};g.renderer.cinematic(g.sim.s.profile,18,'moon');}");page.locator('#frontier').screenshot(path=str(out/'capsule-separation.png'));page.evaluate('()=>window.__FRONTIER_DEBUG__.renderer.render=window.__qaRender')
   for width,height in [(320,740),(390,844),(844,390)]:
    context=browser.new_context(viewport={'width':width,'height':height},is_mobile=True,has_touch=True,device_scale_factor=1);mobile=context.new_page();mobile.on('pageerror',lambda e:report['errors'].append(str(e)));start(mobile)
-   controls=['#joystick','#touch-interact','[data-hold=mine]','[data-hold=jump]','#inventory-button','[data-slot="0"]','[data-slot="1"]','#craft-button','#journal-button','#hud-toggle','#map-button','#pause-button-2d']
+   controls=['#joystick','#touch-interact','#play-ui [data-hold=mine]','#play-ui [data-hold=jump]','#inventory-button','[data-slot="0"]','[data-slot="1"]','#craft-button','#journal-button','#hud-toggle','#map-button','#pause-button-2d']
    boxes={q:mobile.locator(q).bounding_box() for q in controls}
    for selector,box in boxes.items():check(f'{width} {selector} inside viewport',box is not None and box['x']>=0 and box['y']>=0 and box['x']+box['width']<=width+1 and box['y']+box['height']<=height+1)
    for i,a in enumerate(controls):
     for b in controls[i+1:]:check(f'{width} no overlap {a} / {b}',not overlaps(boxes[a],boxes[b]))
    stick=boxes['#joystick'];sx=stick['x']+stick['width']/2;sy=stick['y']+stick['height']/2;cdp=context.new_cdp_session(mobile)
    cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':sx,'y':sy,'id':1}]});cdp.send('Input.dispatchTouchEvent',{'type':'touchMove','touchPoints':[{'x':sx+stick['width']*.3,'y':sy,'id':1}]});before=state(mobile,'return s.player.x');mobile.wait_for_timeout(400)
-   jump=boxes['[data-hold=jump]'];jx=jump['x']+jump['width']/2;jy=jump['y']+jump['height']/2;cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':sx+stick['width']*.3,'y':sy,'id':1},{'x':jx,'y':jy,'id':2}]});mobile.wait_for_timeout(100)
+   jump=boxes['#play-ui [data-hold=jump]'];jx=jump['x']+jump['width']/2;jy=jump['y']+jump['height']/2;cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':sx+stick['width']*.3,'y':sy,'id':1},{'x':jx,'y':jy,'id':2}]});mobile.wait_for_timeout(100)
    check(f'{width} joystick plus simultaneous jump',state(mobile,'return s.player.x')>before and state(mobile,'return !s.player.grounded'))
    cdp.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]});mobile.wait_for_timeout(800);x=state(mobile,'return s.player.x');mobile.wait_for_timeout(500);check(f'{width} release stops movement',abs(state(mobile,'return s.player.x')-x)<1)
    mobile.screenshot(path=str(out/f'play-{width}.png'));mobile.locator('#craft-button').tap();check(f'{width} touch workshop',mobile.locator('#workshop-panel').is_visible());mobile.screenshot(path=str(out/f'workshop-{width}.png'));mobile.locator('#workshop-panel [data-close-panel]').tap();mobile.locator('#map-button').tap();check(f'{width} touch map',mobile.locator('#map-dialog').is_visible());check(f'{width} map fits',mobile.locator('#map-dialog').evaluate('el=>el.scrollWidth<=el.clientWidth+1'));context.close()

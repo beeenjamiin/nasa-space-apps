@@ -80,7 +80,7 @@ export class Simulation{
   if(!drivingVehicle(this)){
   const desired=clamp(input.axis||0,-1,1)*(input.run?config.mobility.run:config.mobility.walk),rate=p.grounded?12:4;p.vx+=(desired-p.vx)*(1-Math.exp(-rate*dt));if(Math.abs(p.vx)<.05&&desired===0)p.vx=0;if(desired)p.facing=Math.sign(desired);
   if(p.grounded)p.boostAvailable=true;if(input.jump&&p.grounded){p.vy=-config.mobility.jump;p.grounded=false;}else if(input.jump&&s.equipment.suited&&p.boostAvailable&&s.resources.energy>=config.mobility.boostEnergy&&!w.inside(p)){p.vy=-config.mobility.boost;p.boostAvailable=false;s.resources.energy-=config.mobility.boostEnergy;this.lastBoostAt=s.elapsed;}
-  const gravity=config[s.planet].gravity*config.pixelsPerMeter;p.vy=Math.min(150,p.vy+gravity*dt);this.move(p.vx*dt,0);p.grounded=false;this.move(0,p.vy*dt);
+  const gravity=this.gravity();p.vy=Math.min(150,p.vy+gravity*dt);this.move(p.vx*dt,0);p.grounded=false;this.move(0,p.vy*dt);
   // A tiny support probe avoids a one-frame fall inside the collision epsilon.
   if(p.vy>=0&&this.collides(p.x,p.y+.06)){this.land(p.vy);p.grounded=true;p.vy=0;}
   }
@@ -93,6 +93,7 @@ export class Simulation{
   for(const f of s.fixtures)if(f.planet===s.planet&&f.type==='lamp')f.charge=Math.max(0,f.charge-dt*.04);tickSupport(this,dt,{inside,online});tickJunior(this,dt,input,previousX);this.animation.update(dt,p,{mining:!!this.mining,boost:s.elapsed-(this.lastBoostAt??-10)<.25});
   if(p.y>(HEIGHT-3)*TILE){s.resources.health=Math.max(0,s.resources.health-15);p.x=this.checkpoint.x;p.y=this.checkpoint.y;p.vx=p.vy=0;this.tell('El equipo te devuelve al refugio. La exploración profunda necesita reservas y una ruta de salida. Salud −15.');}
  }
+ gravity(){return config[this.s.planet].gravity*config.pixelsPerMeter;}
  suitAllows(x,y){return this.s.equipment.suited||this.world.inside({x,y});}
  suitWarning(){if(this.s.elapsed>=(this.suitWarningUntil||0)){this.tell('Ponte el traje antes de salir. Abre la mochila o pulsa T dentro del hábitat.');this.suitWarningUntil=this.s.elapsed+3;}}
  toggleSuit(){const s=this.s;if(!this.world.inside(s.player))return{ok:false,text:'Cambia el traje dentro del hábitat.'};if(s.equipment.suited&&(!(s.planet==='moon'?s.flags.baseOnline:s.flags.marsOnline)||s.resources.energy<=0))return{ok:false,text:'Activa el soporte vital antes de quitarte el traje.'};s.equipment.suited=!s.equipment.suited;const text=s.equipment.suited?'Traje equipado. Comprueba oxígeno y energía antes de salir.':'Traje retirado. Llevas ropa de tripulación; la salida queda bloqueada hasta equiparte.';this.tell(text);return{ok:true,text};}

@@ -6,6 +6,7 @@ const cache=new Map();
 const replacements=Object.entries(english).sort((a,b)=>b[0].length-a[0].length);
 
 const templates=[
+ [/^(.+), tu equipo está listo\. La nave te espera\.$/,name=>`${name}, your crew is ready. The ship awaits.`],
  [/^Mantén pulsado el pico para reunir (\d+) unidades de regolito\. Sal por la derecha\.$/,n=>`Hold the pickaxe to collect ${n} soil blocks. Go outside to the right.`],
  [/^Repara el campo solar al este\. Coste: (\d+) regolitos\.$/,n=>`Repair the solar panels to the east. Cost: ${n} soil blocks.`],
  [/^Recoge las tres muestras: ([\d/]+)\. Sigue hacia el este\.$/,n=>`Collect three rocks: ${n}. Keep going east.`],

@@ -1,3 +1,4 @@
+import {drawCapsule} from './spacecraft.js';
 import {drawAvatar} from './human.js';import {treeSprite,rockSprite} from './decor.js';import {planetSprite} from './planets.js';import {hash} from './world.js';
 import {drawEnginePlume,drawLandingDust,smokeSprite} from './effects.js';
 import {drawSpaceSky,drawSun} from './sky.js';
@@ -62,7 +63,7 @@ export class Cinematic{
   }
   const planet=earth?'moon':'mars',floor=this.ground(planet,time),y=floor-(1-t)**2*h*.65;r.rocket(w*.53,y);if(t<.96)this.flame(w*.53,y-7,time,.3+(1-t)*.6,true);if(t>.66)drawLandingDust(c,time,{x:w*.53,floor,planet,strength:Math.max(.15,(1-t)*2)});r.label(earth?'DESCENSO LUNAR / MOTOR DE ATERRIZAJE':'MARTE / DESCENSO CONTROLADO',w/2,25,'#f2d9b2',10);
  }
- capsule(x,y,parachute=false){const c=this.r.ctx;rect(c,x-7,y-27,14,3,'#27313c');rect(c,x-10,y-24,20,5,'#e9e6d2');rect(c,x-12,y-19,24,6,'#c6cec5');rect(c,x-15,y-13,30,11,'#e0e0cb');rect(c,x-16,y-2,32,4,'#38424a');rect(c,x-13,y+2,26,2,'#897557');rect(c,x+10,y-14,3,11,'#9eafa9');rect(c,x-7,y-21,14,9,'#303e4d');rect(c,x-5,y-20,4,6,'#9dced1');rect(c,x+2,y-20,3,6,'#698caa');rect(c,x-8,y-10,15,7,'#b3c1b8');rect(c,x-6,y-9,11,1,'#eef1da');rect(c,x+3,y-7,2,2,'#6c7d78');rect(c,x-12,y-12,2,8,'#f0b165');if(parachute){line(c,x-10,y-23,x-38,y-66,'#d2d2b7');line(c,x+10,y-23,x+38,y-66,'#d2d2b7');line(c,x,y-23,x,y-79,'#d2d2b7');for(let i=0;i<9;i++){const dx=(i-4)*9,yy=y-85+Math.abs(i-4)*3;rect(c,x+dx-5,yy,10,Math.max(4,y-63-yy),i%2?'#d7dac1':'#cc7955');rect(c,x+dx-4,yy,8,2,i%2?'#f0e9d0':'#e4a76d');}}}
+ capsule(x,y,parachute=false){drawCapsule(this.r.ctx,x,y,parachute);}
  ocean(time){const r=this.r,c=r.ctx,w=r.width,h=r.height,floor=h*.75,g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#547bd5');g.addColorStop(.7,'#92c8e1');g.addColorStop(1,'#c5e1e3');c.fillStyle=g;c.fillRect(0,0,w,h);drawSun(c,w*.2,h*.2,10,{atmosphere:true});
  for(let layer=0;layer<2;layer++)for(let i=0;i<12;i++){const x=(hash(i,3+layer)*w+time*(.3+layer*.5))%(w+80)-40,y=15+hash(i,7+layer)*h*.35;c.save();c.globalAlpha=layer?.85:.48;c.drawImage(smokeSprite(i%4,3),Math.round(x),Math.round(y),43+i%5*9,15+i%3*4);c.restore();}
  for(let row=0;row<h-floor;row++){const k=row/(h-floor);rect(c,0,floor+row,w,1,k<.15?'#69b4bd':k<.4?'#3799af':k<.7?'#247f9e':'#236781');}

@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "checks": [
+    "320x740 stage 1: all visible controls fit without overlap",
+    "320x740 stage 2: all visible controls fit without overlap",
+    "320x740 stage 3: all visible controls fit without overlap",
+    "320x740 stage 4: all visible controls fit without overlap",
+    "320x740 stage 5: all visible controls fit without overlap",
+    "320x740 stage 6: all visible controls fit without overlap",
+    "320x740 stage 7: all visible controls fit without overlap",
+    "320x740 stage 8: all visible controls fit without overlap",
+    "844x390 stage 1: all visible controls fit without overlap",
+    "844x390 stage 2: all visible controls fit without overlap",
+    "844x390 stage 3: all visible controls fit without overlap",
+    "844x390 stage 4: all visible controls fit without overlap",
+    "844x390 stage 5: all visible controls fit without overlap",
+    "844x390 stage 6: all visible controls fit without overlap",
+    "844x390 stage 7: all visible controls fit without overlap",
+    "844x390 stage 8: all visible controls fit without overlap",
+    "English prologue, stage title and gameplay instructions verified"
+  ],
+  "scope": "Layout fixtures for all training stages at 320x740 and 844x390; English interface smoke check."
+}

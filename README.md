@@ -15,6 +15,27 @@ npm run preview
 
 `npm run build` genera `pixel-game.js` e `index.html` desde `src2d/main.js` y `pixel.html`. No edites el bundle generado. Para jugar sin compilar, sirve esta carpeta con `python3 INICIAR.py` o `INICIAR.bat` / `iniciar.sh`.
 
+## Prólogo y entrenamiento jugable
+
+Después de crear tu personaje, la historia comienza con una conferencia de prensa NASA, un flash fotográfico, un noticiero y tu traslado al centro de entrenamiento. Cada escena avanza automáticamente; CONTINUAR ESCENA permite adelantarla sin saltarse el entrenamiento.
+
+No hay quiz introductorio. Las ocho pruebas se superan jugando:
+
+| Prueba | Mecánica practicada |
+|---|---|
+| Evaluación médica | Caminar al escáner, interactuar y detenerse para completar la lectura |
+| Evaluación psicológica | Seguir tres señales de coordinación y confirmar con E |
+| Centrifugadora | Compensar la dirección indicada con A/D o controles táctiles |
+| Piscina | Saltar y controlar el desplazamiento para alcanzar tres boyas |
+| Supervivencia | Usar una ración de la mochila y asegurar el refugio |
+| Cámara de presión | Equipar el traje, gestionar oxígeno y completar una salida con regreso |
+| Orientación | Marcar una baliza en el mapa y encontrarla en el mundo |
+| Capacitación técnica | Mantener el pico, fabricar una lámpara con materiales y desplegarla |
+
+Los objetivos, las instrucciones, el progreso y la respuesta del instructor permanecen visibles. Puedes reiniciar la prueba actual. El entrenamiento usa un estado separado y no gasta los recursos de tu expedición ni sobrescribe una partida anterior. Al aprobar, tu personaje pasa al lanzamiento existente; las partidas guardadas continúan su campaña sin repetir esta introducción.
+
+Las evaluaciones son ejercicios ficticios para enseñar los controles, no diagnósticos médicos ni una reproducción de la selección real de NASA. La piscina representa flotabilidad neutra con movimiento simplificado. Los gráficos originales conservan la estética pixel art y reutilizan el avatar del juego.
+
 ## Un solo juego
 
 La rama `main` reúne la historia de `feature/gameplay-2d`, `feature/interface-education-2d` y `release/orbita-frontera-2d`. La rama de lanzamiento ya incorporaba jugabilidad; se integró su historia completa, sin copiar sistemas duplicados. Conservamos las otras ramas como historial.
@@ -65,11 +86,16 @@ Fuentes nuevas: [entrenamiento NASA](https://www.nasa.gov/humans-in-space/astron
 ```sh
 python3 -m http.server 8765
 # En otra terminal:
+python3 tools/training-browser.py --url http://localhost:8765
+python3 tools/training-browser.py --url http://localhost:8765 --width 390 --height 844
+python3 tools/training-layout.py --url http://localhost:8765
 python3 tools/junior-browser.py --url http://localhost:8765
 ```
 
-El script usa Chromium de `/usr/bin/chromium`; adapta esa ruta si tu sistema es distinto. Verifica entrenamiento, menús, avisos, mapa, idioma y multitouch en 320×740, 390×844 y 844×390. Los escenarios de tormenta usan estados de prueba explícitos. La emulación móvil no sustituye una prueba en dispositivos Android/iOS físicos.
+El primer script recorre las ocho pruebas con controles reales (teclado en escritorio, eventos táctiles en móvil). El último reutiliza la partida aprobada generada por ese recorrido para probar el resto del juego. Los scripts usan Chromium de `/usr/bin/chromium`; adapta esa ruta si tu sistema es distinto. Verifica entrenamiento, menús, avisos, mapa, idioma y multitouch en 320×740, 390×844 y 844×390. Los escenarios de tormenta usan estados de prueba explícitos. La emulación móvil no sustituye una prueba en dispositivos Android/iOS físicos.
 
 ## Publicar
 
 Sirve `index.html`, `pixel-game.js`, `css/`, `assets/` y `data/` juntos. GitHub Pages puede servir esta carpeta; conserva las rutas relativas. El ZIP de `descargas/` contiene el juego compilado y el código editable.
+
+Las etiquetas `v*` ejecutan `.github/workflows/release.yml`: pruebas, compilación, ZIP con manifiesto, publicación en GitHub Releases y descarga de comprobación. Solo después de comparar el archivo descargado se registra la etiqueta `release-verified/<versión>` con la URL y el SHA-256.

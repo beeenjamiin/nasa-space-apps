@@ -1,3 +1,4 @@
+import {drawCapsule} from './spacecraft.js';
 import {translate} from './language.js';
 import {dustPhase} from './junior-mission.js';
 import {drawFacade,drawHabitatAccents} from './habitat.js';
@@ -28,7 +29,7 @@ export class Renderer{
 
  tile(c,id,x,y,tx,ty,planet){
   const ink='#1b2131',moon=planet==='moon',r=(dx,dy,w,h,color)=>rect(c,x+dx,y+dy,w,h,color);
-  if(id===BLOCK.HULL){r(0,0,8,8,'#bac6c6');r(0,0,8,1,ink);r(0,1,8,1,'#ece7d2');r(1,4,1,2,'#738b98');r(0,7,8,1,'#637d8c');return;}
+  if(id===BLOCK.HULL){const top=this.world?.get(tx,ty-1)!==BLOCK.HULL,bottom=this.world?.get(tx,ty+1)!==BLOCK.HULL;r(0,0,8,8,'#bac6c6');if(top){r(0,0,8,1,ink);r(0,1,8,1,'#ece7d2');}if(bottom)r(0,7,8,1,'#637d8c');if(tx%4===0)r(1,4,1,2,'#738b98');return;}
   if(id===BLOCK.FLOOR){r(0,0,8,8,'#405361');r(0,0,8,1,ink);r(0,1,8,1,'#acbdb1');r(2,3,4,1,'#243545');r(2,6,4,1,'#243545');return;}
   geologyTile(c,id,x,y,tx,ty,this.world);
  }
@@ -40,13 +41,14 @@ export class Renderer{
  solar(x,y,online=true,supports=[y,y],tier=1){const c=this.ctx;for(const [i,dx]of[10,25].entries()){rect(c,x+dx-1,y-14,4,Math.max(14,supports[i]-y+14),'#1b2635');rect(c,x+dx,y-13,2,Math.max(13,supports[i]-y+13),'#a8bfbd');rect(c,x+dx-4,supports[i]-2,10,2,'#6e8c9b');}rect(c,x+10,y-24,2,24,'#adb6ad');rect(c,x-7,y-30,39,21,'#141720');rect(c,x-5,y-28,35,3,'#bfc4b9');rect(c,x-4,y-25,33,14,online?['#3f6170','#5d7275','#655f7b'][tier-1]:'#313e42');for(let i=0;i<5;i++)rect(c,x-2+i*6,y-25,1,13,'#8aaba7');rect(c,x-4,y-19,33,1,'#8aaba7');rect(c,x-8,y,40,2,'#272e2e');if(tier>1)for(let i=0;i<tier;i++)rect(c,x+25-i*4,y-28,2,2,tier===3?'#d8c3f0':'#e0c18a');}
  rocket(x,y,small=false){const c=this.ctx;c.save();c.translate(Math.round(x),Math.round(y));if(small)c.scale(.75,.75);const ink='#141720';
   // Stepped silhouette: ascent cabin, foil-wrapped descent stage and splayed legs.
-  rect(c,-8,-65,16,3,ink);rect(c,-13,-62,26,5,ink);rect(c,-16,-57,32,28,ink);rect(c,-12,-59,24,28,'#c1c4b2');rect(c,-8,-62,16,4,'#ece7cd');rect(c,-14,-54,2,21,'#777f82');rect(c,11,-54,2,20,'#777f82');rect(c,-8,-54,17,16,ink);rect(c,-6,-52,13,12,'#577c8b');rect(c,-5,-51,4,8,'#adc3bd');rect(c,-12,-34,24,5,'#838e86');
+  drawCapsule(c,0,-34);
   rect(c,-19,-30,38,20,ink);rect(c,-17,-28,34,16,'#ac865b');rect(c,-15,-26,30,4,'#ddc08a');for(let i=0;i<5;i++){rect(c,-14+i*6,-22,2,9,'#735b4e');rect(c,-11+i*6,-19,2,2,'#e4ca92');}rect(c,-7,-14,14,9,ink);rect(c,-5,-12,10,5,'#5b6464');
   for(const side of[-1,1]){for(let k=0;k<4;k++){rect(c,side*(16+k*3)-(side>0?0:3),-22+k*4,4,6,ink);rect(c,side*(16+k*3)-(side>0?0:3)+1,-21+k*4,2,4,'#9fa68e');}rect(c,side*28-8,-5,16,4,ink);rect(c,side*28-6,-4,12,2,'#c2bf9e');}rect(c,17,-66,2,34,ink);rect(c,15,-67,6,2,'#c8c8ae');rect(c,16,-69,4,2,'#d4ad69');c.restore();}
- launcher(x,y,boosterOnly=false){const c=this.ctx;c.save();c.translate(Math.round(x),Math.round(y));if(boosterOnly){c.beginPath();c.rect(-30,-84,60,90);c.clip();}const ink='#141720';rect(c,-4,-109,8,6,ink);rect(c,-7,-103,14,7,ink);rect(c,-10,-96,20,77,ink);rect(c,-8,-96,16,74,'#dddcc5');rect(c,-6,-100,12,5,'#dddcc5');rect(c,-3,-106,6,6,'#ece7cc');rect(c,4,-91,3,62,'#a6afa8');for(const yy of[-83,-64,-43]){rect(c,-9,yy,18,6,ink);rect(c,-7,yy+1,14,3,'#656e70');}rect(c,-5,-92,10,7,ink);rect(c,-3,-91,6,4,'#7ea1a5');for(const side of[-1,1]){rect(c,side*13-4,-58,8,42,ink);rect(c,side*13-2,-56,4,38,'#b6b7a6');rect(c,side*13-3,-18,6,8,ink);}rect(c,-8,-23,16,12,ink);rect(c,-5,-19,10,11,'#626564');for(let n=0;n<7;n++){rect(c,-7,-85+n*8,13,1,'#b6bdb4');rect(c,-7,-84+n*8,2,5,'#ecebdd');}rect(c,-4,-76,6,4,'#cc875c');rect(c,6,-72,1,44,'#6b8589');for(const dx of[-12,0,12]){rect(c,dx-3,-13,6,4,'#89958e');rect(c,dx-4,-9,8,3,'#333e4a');}c.restore();}
+ launcher(x,y,boosterOnly=false){const c=this.ctx;c.save();c.translate(Math.round(x),Math.round(y));if(boosterOnly){c.beginPath();c.rect(-30,-84,60,90);c.clip();}const ink='#141720';rect(c,-10,-84,20,65,ink);rect(c,-8,-84,16,62,'#dddcc5');rect(c,4,-81,3,52,'#a6afa8');for(const yy of[-83,-64,-43]){rect(c,-9,yy,18,6,ink);rect(c,-7,yy+1,14,3,'#656e70');}if(!boosterOnly){c.save();c.translate(0,-85);c.scale(.7,.7);drawCapsule(c,0,0);c.restore();}for(const side of[-1,1]){rect(c,side*13-4,-58,8,42,ink);rect(c,side*13-2,-56,4,38,'#b6b7a6');rect(c,side*13-3,-18,6,8,ink);}rect(c,-8,-23,16,12,ink);rect(c,-5,-19,10,11,'#626564');for(let n=0;n<7;n++){rect(c,-7,-85+n*8,13,1,'#b6bdb4');rect(c,-7,-84+n*8,2,5,'#ecebdd');}rect(c,-4,-76,6,4,'#cc875c');rect(c,6,-72,1,44,'#6b8589');for(const dx of[-12,0,12]){rect(c,dx-3,-13,6,4,'#89958e');rect(c,dx-4,-9,8,3,'#333e4a');}c.restore();}
 
  base(s){const c=this.ctx,x=20*UNIT-this.cam.x,y=25*UNIT-this.cam.y,w=25*UNIT,h=8*UNIT,active=s.planet==='moon'?s.flags.baseOnline:s.flags.marsOnline;
   rect(c,x,y,w,h,'#283335');rect(c,x+3,y+4,w-6,h-8,'#4b5957');for(let n=0;n<12;n++){const px=x+10+n*32;rect(c,px,y+12,28,85,'#66716a');rect(c,px+2,y+14,24,1,'#889187');rect(c,px+2,y+95,24,1,'#394844');}
+  drawHabitatAccents(c,x,y,active);
   // Windows, functional stations and service lines in a cutaway pressure habitat.
   for(let n=0;n<4;n++){const wx=x+30+n*88;rect(c,wx,y+22,47,27,'#1d2b31');rect(c,wx+2,y+24,43,22,'#111c23');rect(c,wx+5,y+28,2,2,'#9ca8a2');rect(c,wx+4,y+46,39,2,'#9baba5');}
   rect(c,x+7,y+9,w-14,3,'#a7aca0');rect(c,x+7,y+15,w-14,2,'#263637');for(let i=0;i<12;i++)rect(c,x+10+i*32,y+7,3,14,'#b4b8a9');rect(c,x+8,y+20,w-16,2,active?'#dcd7b2':'#737b70');
@@ -58,7 +60,7 @@ export class Renderer{
   // A visible growing tray and shelter status connect the NASA systems to the room.
   const crop=s.support.crops[s.planet],gx=39*UNIT-this.cam.x+16;rect(c,gx,y+42,34,25,'#1d2928');rect(c,gx+2,y+43,30,2,active?'#d7d6af':'#647267');rect(c,gx+2,y+63,30,3,'#a3997c');for(let i=0;i<4;i++){const height=crop?4+(1-crop.remaining/12)*10:4;rect(c,gx+6+i*7,y+62-height,1,height,'#86b358');rect(c,gx+4+i*7,y+60-height,3,2,'#4b9650');rect(c,gx+7+i*7,y+58-height,3,2,'#8cc65b');}rect(c,x+w-15,y+25,4,4,s.support.weather[s.planet].phase==='active'?'#e2a361':'#8cac82');
   const eva=42*UNIT-this.cam.x;rect(c,eva-9,y+58,20,59,'#263b42');rect(c,eva-7,y+60,16,54,'#82958b');rect(c,eva-3,y+64,8,9,s.equipment.suited?'#354f5a':'#cfddcc');rect(c,eva-4,y+76,10,20,s.equipment.suited?'#4f6968':'#bdcbbb');this.label('EVA',eva+1,y+54,'#dfdcc2',6);
-  drawHabitatAccents(c,x,y,active);for(const edge of[20,44]){const doorX=edge*UNIT-this.cam.x,near=Math.abs(s.player.x-edge*UNIT)<42;rect(c,doorX-3,y+77,22,4,'#b5bcae');rect(c,doorX-3,y+79,3,49,'#e0dfca');rect(c,doorX+16,y+79,3,49,'#e0dfca');if(!near){rect(c,doorX,y+99,16,29,'#596f6a');rect(c,doorX+2,y+101,12,24,'#75928a');}rect(c,doorX-2,y+84,1,9,near?'#a2c68d':'#d1ad70');}
+  for(const edge of[20,44]){const doorX=edge*UNIT-this.cam.x,near=Math.abs(s.player.x-edge*UNIT)<42;rect(c,doorX-3,y+77,22,4,'#b5bcae');rect(c,doorX-3,y+79,3,49,'#e0dfca');rect(c,doorX+16,y+79,3,49,'#e0dfca');if(!near){rect(c,doorX,y+99,16,29,'#596f6a');rect(c,doorX+2,y+101,12,24,'#75928a');}rect(c,doorX-2,y+84,1,9,near?'#a2c68d':'#d1ad70');}
  }
  label(text,x,y,color='#dadcc8',size=8){const c=this.ctx;c.fillStyle=color;c.font=`${size}px Silkscreen, monospace`;c.textAlign='center';c.fillText(translate(text),Math.round(x),Math.round(y));}
  render(sim,time,{menu=false}={}){const s=sim.s,p=s.player,c=this.ctx;this.time=time;const targetX=Math.max(0,Math.min(WIDTH*TILE-this.width,p.x-this.width*.45)),targetY=Math.max(0,Math.min(HEIGHT*TILE-this.height,p.y-this.height*.6));this.cam.x=targetX;this.cam.y=targetY;this.sky(s.planet,this.cam,time);const inside=sim.world.inside(p),dt=Math.min(.1,Math.max(0,time-(this.lastRenderTime??time)));this.lastRenderTime=time;if(this.facadeWorld!==sim.world){this.facadeWorld=sim.world;this.facadeOpacity=inside?0:1;}else{const target=inside?0:1,step=dt/.45;this.facadeOpacity=target>this.facadeOpacity?Math.min(1,this.facadeOpacity+step):Math.max(0,this.facadeOpacity-step);}this.base(s);this.terrain(sim.world);

@@ -1,0 +1,66 @@
+name: Publicar juego portable
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Probar y compilar
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm test | tee "$RUNNER_TEMP/npm-test.txt"
+          npm run build
+          git diff --exit-code -- index.html pixel-game.js
+      - name: Exportar ZIP con manifiesto y verificación
+        shell: bash
+        run: |
+          python3 tools/export-zip.py \
+            --output "$RUNNER_TEMP/orbita-frontera-2d-${GITHUB_REF_NAME}.zip" \
+            --browser-report docs/VALIDACION-JUNIOR.json \
+            --unit-log "$RUNNER_TEMP/npm-test.txt"
+      - name: Publicar, descargar y verificar el archivo publicado
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/orbita-frontera-2d-${GITHUB_REF_NAME}.zip"
+          gh release create "$GITHUB_REF_NAME" "$archive" "$archive.sha256" \
+            --verify-tag --title "Órbita: Frontera ${GITHUB_REF_NAME} — Entrenamiento" \
+            --notes-file docs/RELEASE-ENTRENAMIENTO.md
+          gh release download "$GITHUB_REF_NAME" --pattern "$(basename "$archive")" \
+            --dir "$RUNNER_TEMP/release-download"
+          cmp "$archive" "$RUNNER_TEMP/release-download/$(basename "$archive")"
+          gh release view "$GITHUB_REF_NAME" --json url,tagName,isDraft,publishedAt,assets > "$RUNNER_TEMP/release-verified.json"
+          python3 - "$archive" "$RUNNER_TEMP/release-verified.json" <<'PY'
+          import hashlib,json,sys,os
+          from pathlib import Path
+          archive,report=map(Path,sys.argv[1:])
+          data=json.loads(report.read_text())
+          assert not data['isDraft']
+          assert any(a['name']==archive.name and a['size']==archive.stat().st_size for a in data['assets'])
+          data['sha256']=hashlib.sha256(archive.read_bytes()).hexdigest()
+          data['verifiedSourceCommit']=os.environ['GITHUB_SHA']
+          data['downloadVerified']=True
+          report.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git tag -a "release-verified/${GITHUB_REF_NAME}" -F "$RUNNER_TEMP/release-verified.json"
+          git push origin "refs/tags/release-verified/${GITHUB_REF_NAME}"
