@@ -1,3 +1,4 @@
+import {shellFinish,habitatFinish} from './structure-art.js';
 const rect=(c,x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));};
 /** Original pixel habitat, informed by NASA pressure-shell/crew-access references. */
 export function drawFacade(c,x,y,opacity){if(opacity<=0)return;c.save();c.globalAlpha=opacity;
@@ -10,8 +11,9 @@ export function drawFacade(c,x,y,opacity){if(opacity<=0)return;c.save();c.global
  rect(c,x+14,y+11,36,5,'#dfb977');rect(c,x+54,y+11,90,5,'#627f8c');rect(c,x+w-43,y+7,25,3,'#8dabae');
  // Access hatches occupy the same clear thresholds as the physical shell.
  for(const dx of[0,384]){rect(c,x+dx,y+77,16,49,ink);rect(c,x+dx+2,y+79,12,45,'#99aca9');rect(c,x+dx+4,y+82,8,37,'#526e7d');rect(c,x+dx+6,y+96,2,6,'#d8c687');rect(c,x+dx+2,y+75,12,2,'#d9c897');}
- c.restore();}
+ shellFinish(c,x,y);c.restore();}
 export function drawHabitatAccents(c,x,y,active){
+ habitatFinish(c,x,y,active);
  // Fixed service conduits, lit ceiling and floor guides stay behind the actor.
  for(let bay=0;bay<4;bay++){const bx=x+bay*96;rect(c,bx+10,y+28,3,73,'#293f51');rect(c,bx+12,y+28,1,73,'#93a8ad');rect(c,bx+15,y+30,3,63,'#3c5b67');rect(c,bx+6,y+24,80,3,active?'#f5df9c':'#647578');rect(c,bx+8,y+28,76,1,'#8b9c8c');rect(c,bx+14,y+119,65,1,active?'#86bea8':'#52676d');}
 }

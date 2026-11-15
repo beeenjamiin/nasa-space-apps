@@ -1,13 +1,11 @@
-# Descargar Órbita: Frontera — Astronautas Junior
+# Descargar Órbita: Frontera 0.7.0 — Tierra, Luna y Marte
 
-## [Descargar ZIP completo](https://github.com/beeenjamiin/nasa-space-apps/raw/refs/heads/main/descargas/orbita-frontera-2d.zip)
+[ZIP completo de esta rama](https://github.com/beeenjamiin/nasa-space-apps/raw/refs/heads/feature/planet-graphics-overhaul/descargas/orbita-frontera-2d.zip) · [SHA-256](orbita-frontera-2d.zip.sha256)
 
-Juego 2D compilado, código fuente, recursos, pruebas, documentación y capturas de validación. Si GitHub muestra el archivo, usa **Download raw file**.
+Juego compilado, fuentes, recursos, lanzadores, pruebas y licencias. Extraer la carpeta completa y ejecutar `INICIAR.bat`, `sh iniciar.sh` o `python3 INICIAR.py`. También funciona con un servidor HTTP estático. No abrir mediante `file://`.
 
-Extrae el ZIP y ejecuta `INICIAR.bat` o `python3 INICIAR.py`. Para desarrollar: Node 24, `npm ci`, `npm test`, `npm run build`. Consulta `README.md` dentro del paquete.
+Conserva la aventura junior bilingüe, el entrenamiento, rover, materiales con origen, puentes, mapa, mochila, taller, bitácora, medallas, polvo y regreso a la Tierra. Renueva la presentación terrestre, el paisaje lunar y marciano, los fondos, texturas, iluminación y generación de mapas nuevos.
 
-La rama `main` integra las ramas de jugabilidad y lanzamiento y la experiencia junior: entrenamiento, rover, materiales con origen, puentes que colapsan, mochila/taller/bitácora independientes, español e inglés, joystick, medallas, avisos, polvo marciano y regreso a la Tierra.
+Validación local: 95 pruebas Node y 283 comprobaciones Chromium, cero fallos. Móvil probado por emulación, no en dispositivos físicos. Se comprueban siete campañas físicas y los mapas guardados antiguos. El ZIP lleva un manifiesto SHA-256, capturas y pruebas reproducibles. La publicación en Releases tiene su propia comprobación remota y no se deduce de esta validación local.
 
-Validación: **87 pruebas de Node y 283 comprobaciones en Chromium**, sin errores JavaScript en ese recorrido. El ZIP se extrae, instala con `npm ci` y recompila; el resultado coincide byte a byte con el juego incluido. Las comprobaciones móviles usan emulación; los escenarios de tormenta usan estados de prueba explícitos. El recorrido físico de campaña se valida en la simulación en cuatro mapas.
-
-[Código en main](https://github.com/beeenjamiin/nasa-space-apps/tree/main) · [SHA-256 del ZIP](orbita-frontera-2d.zip.sha256) · [Cambios](../CAMBIOS-JUNIOR.md)
+[Notas y compatibilidad](../docs/RELEASE-v0.7.0.md) · [Resultados](../docs/VALIDACION-GRAFICOS.json)

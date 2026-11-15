@@ -32,13 +32,13 @@ export function drawSun(c,x,y,r=7,{atmosphere=false}={}){
 }
 
 export function drawSpaceSky(c,width,height,{camX=0,space=false}={}){
- const gradient=c.createLinearGradient(0,0,0,height);gradient.addColorStop(0,space?'#100f27':'#080b11');gradient.addColorStop(1,space?'#202340':'#12151b');c.fillStyle=gradient;c.fillRect(0,0,width,height);
+ const gradient=c.createLinearGradient(0,0,0,height);gradient.addColorStop(0,space?'#100f27':'#020408');gradient.addColorStop(1,space?'#202340':'#070b11');c.fillStyle=gradient;c.fillRect(0,0,width,height);
  const layer=starLayer(width,height,space),offset=((camX*.018)%width+width)%width;c.drawImage(layer,-Math.round(offset),0);if(offset)c.drawImage(layer,width-Math.round(offset),0);
 }
 
 export function drawSurfaceSky(c,width,height,planet,cam,time){
  if(planet==='mars'){
-  const g=c.createLinearGradient(0,0,0,height);g.addColorStop(0,'#4c3440');g.addColorStop(.5,'#a36c5d');g.addColorStop(1,'#d2a27b');c.fillStyle=g;c.fillRect(0,0,width,height);
+  const g=c.createLinearGradient(0,0,0,height);g.addColorStop(0,'#92645f');g.addColorStop(.5,'#c08b76');g.addColorStop(1,'#e1b598');c.fillStyle=g;c.fillRect(0,0,width,height);
   // Thin stratified haze and distant moons are illustrations, not an ephemeris.
   for(let i=0;i<12;i++){const y=height*(.18+hash(i,62)*.42),x=((hash(i,63)*width-cam.x*.012)%width+width)%width;c.save();c.globalAlpha=.035;pixel(c,x,y,32+Math.floor(hash(i,64)*60),2,'#ecd4ba');c.restore();}
   drawSun(c,width*.77,height*.14,5,{atmosphere:true});pixel(c,width*.25,height*.15,5,3,'#c8b3a0');pixel(c,width*.25+1,height*.15-1,3,5,'#9e8a83');pixel(c,width*.42,height*.095,2,2,'#d6bdab');return;

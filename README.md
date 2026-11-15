@@ -2,6 +2,10 @@
 
 Una aventura espacial 2D para niños de 7 a 12 años: crea tu astronauta, completa el entrenamiento, cuida una base lunar, prepara una expedición a Marte y trae tus descubrimientos a la Tierra. Interfaz en español e inglés, controles de teclado y joystick táctil.
 
+## Gráficos 0.7.0
+
+Tierra, Luna y Marte reciben arte procedural original, fondos de cinco capas, texturas conectadas e iluminación de equipos. Solo las expediciones nuevas usan el generador 4; los mapas antiguos mantienen sus celdas y excavaciones. Se conservan las misiones y controles. Consulta [cambios y compatibilidad](docs/RELEASE-v0.7.0.md) y [validación](docs/VALIDACION-GRAFICOS.json).
+
 ## Ejecutar y desarrollar
 
 Requiere Node.js 24 o posterior. Desde Visual Studio Code, abre esta carpeta y ejecuta:

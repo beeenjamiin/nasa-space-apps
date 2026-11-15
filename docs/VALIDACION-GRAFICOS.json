@@ -1,0 +1,93 @@
+{
+  "status": "passed",
+  "unit": {
+    "tests": 95,
+    "passed": 95,
+    "failed": 0,
+    "skipped": 0,
+    "physicalCampaignMaps": 7
+  },
+  "browser": {
+    "engine": "Chromium",
+    "checks": 283,
+    "errors": [],
+    "scope": "Real desktop and emulated touch browser. Mars resource fixtures; physical campaign is covered by Node tests.",
+    "renderSample": {
+      "frames": 60,
+      "medianMs": 16.69999999999709,
+      "p95Ms": 16.799999999999272,
+      "scope": "Headless Chromium desktop sample, not a device benchmark"
+    }
+  },
+  "graphics": {
+    "scope": "Native Canvas CPU, not browser/mobile FPS",
+    "views": [
+      {
+        "planet": "moon",
+        "name": "base",
+        "x": 416,
+        "version": 4
+      },
+      {
+        "planet": "moon",
+        "name": "nearby",
+        "x": 1280,
+        "version": 4
+      },
+      {
+        "planet": "moon",
+        "name": "geology",
+        "x": 3200,
+        "version": 4
+      },
+      {
+        "planet": "moon",
+        "name": "far",
+        "x": 4480,
+        "version": 4
+      },
+      {
+        "planet": "mars",
+        "name": "base",
+        "x": 416,
+        "version": 4
+      },
+      {
+        "planet": "mars",
+        "name": "nearby",
+        "x": 1280,
+        "version": 4
+      },
+      {
+        "planet": "mars",
+        "name": "geology",
+        "x": 3200,
+        "version": 4
+      },
+      {
+        "planet": "mars",
+        "name": "far",
+        "x": 4480,
+        "version": 4
+      }
+    ],
+    "benchmarks": [
+      {
+        "planet": "moon",
+        "frames": 180,
+        "medianMs": 2.4697690000002694,
+        "p95Ms": 22.68929799999978,
+        "cachedChunks": 64
+      },
+      {
+        "planet": "mars",
+        "frames": 180,
+        "medianMs": 2.6343669999996564,
+        "p95Ms": 28.096548999999868,
+        "cachedChunks": 64
+      }
+    ]
+  },
+  "compatibility": "Exact terrain hashes for generators 1, 2 and 3 on Moon and Mars; saved edits and version 4 round-trip verified.",
+  "releasePublication": "Tracked separately by the GitHub publication receipt; this file describes local validation only."
+}

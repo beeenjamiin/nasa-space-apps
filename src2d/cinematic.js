@@ -1,3 +1,5 @@
+import {drawEarthEnvironment,earthFacilityDetail} from './earth-environment.js';
+import {drawEarthOcean} from './earth-visuals.js';
 import {drawAvatar} from './human.js';import {treeSprite,rockSprite} from './decor.js';import {planetSprite} from './planets.js';import {hash} from './world.js';
 import {drawEnginePlume,drawLandingDust,smokeSprite} from './effects.js';
 import {drawSpaceSky,drawSun} from './sky.js';
@@ -11,18 +13,10 @@ function line(c,x,y,ex,ey,color,width=1){const n=Math.ceil(Math.max(Math.abs(ex-
 export class Cinematic{
  constructor(renderer){this.r=renderer;}
  stars(time){const r=this.r;drawSpaceSky(r.ctx,r.width,r.height,{space:true});}
- earthLandscape(time){const r=this.r,c=r.ctx,w=r.width,h=r.height,floor=h*.84;const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#5066e5');g.addColorStop(.65,'#6a9af0');g.addColorStop(1,'#b4cfe5');c.fillStyle=g;c.fillRect(0,0,w,h);
-  drawSun(c,w*.17,h*.17,10,{atmosphere:true});
-  // Soft color separation comes from discrete pixel clouds and distant mountain planes.
-  for(let i=0;i<17;i++){const x=(hash(i,4)*w+time*.8)%(w+90)-50,y=25+hash(i,8)*h*.21;c.drawImage(smokeSprite(i%4,3),Math.round(x),Math.round(y),42+i%4*9,17+i%3*4);}
-  for(let l=0;l<4;l++){c.beginPath();c.moveTo(0,floor);for(let x=0;x<=w+4;x+=3){const u=(x+l*71)/87,k=Math.floor(u),t=u-k,a=hash(k,l+11),b=hash(k+1,l+11),ridge=a+(b-a)*t;const yy=floor-37+l*13-ridge*(119-l*16);c.lineTo(x,Math.round(yy));}c.lineTo(w,floor);c.closePath();c.fillStyle=['#8cbed6','#6baabf','#498e9e','#377c79'][l];c.fill();}
-  c.save();c.globalAlpha=.38;for(let i=0;i<15;i++){const tree=treeSprite(i%4),scale=.35+(i%3)*.1;c.drawImage(tree,Math.round(i*w/14-25),Math.round(floor-tree.height*scale),Math.round(tree.width*scale),Math.round(tree.height*scale));}c.restore();
-  // Natural trees remain outside the launch exclusion area, never on the Moon.
-  for(const [i,tx]of[-.025,.105,.92,1.045].entries()){const tree=treeSprite(i);c.drawImage(tree,Math.round(w*tx-48),Math.round(floor-tree.height+3));}
-  rect(c,0,floor,w,h-floor,'#79533d');rect(c,0,floor,w,1,'#182b22');rect(c,0,floor+1,w,3,'#77bf45');rect(c,0,floor+4,w,3,'#367a36');for(let x=0;x<w;x+=3){const a=hash(x,9);if(a>.35)rect(c,x,floor-2-a*3,1,3+a*3,'#5cad43');rect(c,x,floor+9+hash(x,7)*40,2,2,'#ad7a4b');if(a>.8)rect(c,x,floor+5,2,4,'#397435');}
+ earthLandscape(time){const r=this.r,c=r.ctx,w=r.width,h=r.height,floor=h*.84;drawEarthEnvironment(c,w,h,time,floor);
   const bx=w*.23;rect(c,bx,floor-40,92,40,'#1c2e38');rect(c,bx+3,floor-38,86,36,'#c0cfbd');rect(c,bx+5,floor-36,82,3,'#e2e3c9');for(let i=0;i<4;i++){rect(c,bx+8+i*19,floor-29,15,13,'#263e53');rect(c,bx+9+i*19,floor-28,13,4,'#7fabb4');}rect(c,bx+8,floor-9,67,3,'#899c92');
   const mount=w*.68;rect(c,mount-33,floor-4,66,8,'#26394b');rect(c,mount-23,floor-15,10,12,'#899e9e');rect(c,mount+13,floor-15,10,12,'#899e9e');rect(c,mount-27,floor-17,54,3,'#374f62');
-  return floor;
+  earthFacilityDetail(c,w,floor);return floor;
  }
  tower(floor,progress,bridge){const r=this.r,c=r.ctx,w=r.width,tx=w*.43,deck=floor-126,ink='#1c2534';
   rect(c,tx-18,deck-20,36,148,ink);rect(c,tx-14,deck-17,28,144,'#55697a');rect(c,tx-9,deck-13,18,136,'#263c50');for(let y=deck-14;y<floor;y+=20){line(c,tx-13,y,tx+12,y+18,'#9aaeb8',2);line(c,tx+12,y,tx-13,y+18,'#748b9b',2);}rect(c,tx-21,deck-22,42,5,'#b3c2bc');rect(c,tx-24,floor-2,48,6,'#273848');
@@ -63,12 +57,7 @@ export class Cinematic{
   const planet=earth?'moon':'mars',floor=this.ground(planet,time),y=floor-(1-t)**2*h*.65;r.rocket(w*.53,y);if(t<.96)this.flame(w*.53,y-7,time,.3+(1-t)*.6,true);if(t>.66)drawLandingDust(c,time,{x:w*.53,floor,planet,strength:Math.max(.15,(1-t)*2)});r.label(earth?'DESCENSO LUNAR / MOTOR DE ATERRIZAJE':'MARTE / DESCENSO CONTROLADO',w/2,25,'#f2d9b2',10);
  }
  capsule(x,y,parachute=false){const c=this.r.ctx;rect(c,x-7,y-27,14,3,'#27313c');rect(c,x-10,y-24,20,5,'#e9e6d2');rect(c,x-12,y-19,24,6,'#c6cec5');rect(c,x-15,y-13,30,11,'#e0e0cb');rect(c,x-16,y-2,32,4,'#38424a');rect(c,x-13,y+2,26,2,'#897557');rect(c,x+10,y-14,3,11,'#9eafa9');rect(c,x-7,y-21,14,9,'#303e4d');rect(c,x-5,y-20,4,6,'#9dced1');rect(c,x+2,y-20,3,6,'#698caa');rect(c,x-8,y-10,15,7,'#b3c1b8');rect(c,x-6,y-9,11,1,'#eef1da');rect(c,x+3,y-7,2,2,'#6c7d78');rect(c,x-12,y-12,2,8,'#f0b165');if(parachute){line(c,x-10,y-23,x-38,y-66,'#d2d2b7');line(c,x+10,y-23,x+38,y-66,'#d2d2b7');line(c,x,y-23,x,y-79,'#d2d2b7');for(let i=0;i<9;i++){const dx=(i-4)*9,yy=y-85+Math.abs(i-4)*3;rect(c,x+dx-5,yy,10,Math.max(4,y-63-yy),i%2?'#d7dac1':'#cc7955');rect(c,x+dx-4,yy,8,2,i%2?'#f0e9d0':'#e4a76d');}}}
- ocean(time){const r=this.r,c=r.ctx,w=r.width,h=r.height,floor=h*.75,g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#547bd5');g.addColorStop(.7,'#92c8e1');g.addColorStop(1,'#c5e1e3');c.fillStyle=g;c.fillRect(0,0,w,h);drawSun(c,w*.2,h*.2,10,{atmosphere:true});
- for(let layer=0;layer<2;layer++)for(let i=0;i<12;i++){const x=(hash(i,3+layer)*w+time*(.3+layer*.5))%(w+80)-40,y=15+hash(i,7+layer)*h*.35;c.save();c.globalAlpha=layer?.85:.48;c.drawImage(smokeSprite(i%4,3),Math.round(x),Math.round(y),43+i%5*9,15+i%3*4);c.restore();}
- for(let row=0;row<h-floor;row++){const k=row/(h-floor);rect(c,0,floor+row,w,1,k<.15?'#69b4bd':k<.4?'#3799af':k<.7?'#247f9e':'#236781');}
- for(let i=0;i<110;i++){const depth=hash(i,91),x=(hash(i,90)*w+time*(.4+depth*3))%w,y=floor+3+depth*(h-floor-5),width=3+depth*13,crest=Math.sin(time*1.3+i);rect(c,x,y,width,1,i%7===0?'#d2ebe0':crest>.5?'#89cdd0':'#4ca6bb');if(i%5===0)rect(c,x+width*.3,y+1,width*.5,1,'#287f9a');}
- for(let i=0;i<18;i++){const y=floor+3+i*1.3;rect(c,w*.2-5-i*.8+Math.sin(time+i)*3,y,10+i*1.6,1,'rgba(237,223,171,.35)');}return floor;}
-
+ ocean(time){return drawEarthOcean(this.r.ctx,this.r.width,this.r.height,time);}
  drawEarthHome(profile,time){const r=this.r,c=r.ctx,w=r.width,floor=this.ocean(time),x=w*.3;rect(c,x-52,floor-4,129,13,'#203f51');rect(c,x-44,floor+9,112,5,'#496b74');rect(c,x-49,floor-7,123,3,'#c6cbb5');rect(c,x+30,floor-36,33,29,'#aebcaf');rect(c,x+34,floor-32,25,10,'#395f70');rect(c,x+44,floor-59,2,24,'#bdc7b6');rect(c,x+36,floor-60,18,2,'#d6d5b4');this.capsule(x-20,floor-8);drawAvatar(c,r.art,profile,x+5,floor-41,{time,suited:false});r.label('TIERRA / RECUPERACIÓN DE LA TRIPULACIÓN',w/2,25,'#f0e5c4',9);}
  drawReturn(profile,time){
   const r=this.r,c=r.ctx,w=r.width,h=r.height,{phase,t}=cinemaState(time,'earth');this.state=cinemaState(time,'earth');

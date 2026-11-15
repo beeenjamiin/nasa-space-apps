@@ -12,9 +12,9 @@ import {WorldMap} from './map-system.js';
 import {restoreVehicles,drivingVehicle,tickVehicles,enterRover,exitRover,playerHitsVehicle,validateVehiclePositions} from './vehicles.js';
 export const SAVE_KEY='orbita-frontier-save-v1';
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
-export function createState(profile={},seed=null){
+export function createState(profile={},seed=null,generation=3){
  return {
-  schema:2,worldVersion:Number.isInteger(seed)&&seed>=0&&seed<=0xffffffff?3:1,worldSeed:Number.isInteger(seed)?seed>>>0:0,
+  schema:2,worldVersion:Number.isInteger(seed)&&seed>=0&&seed<=0xffffffff?(generation===4?4:3):1,worldSeed:Number.isInteger(seed)?seed>>>0:0,
   equipment:{pickaxe:1,suited:true},
   profile:{name:String(profile.name||'Alex').trim().slice(0,18)||'Alex',color:clamp(Math.floor(Number(profile.color)||0),0,3),skin:['#e9b38b','#bf815b','#805138'].includes(profile.skin)?profile.skin:'#e9b38b',hair:['#332a28','#9b673e','#ddd8c9'].includes(profile.hair)?profile.hair:'#332a28',visor:profile.visor==='gold'?'gold':'clear',role:['engineer','biologist','explorer'].includes(profile.role)?profile.role:'engineer'},
   planet:'moon',player:{x:26*UNIT,y:33*UNIT-PLAYER_HEIGHT,vx:0,vy:0,facing:1,grounded:true,boostAvailable:true},
@@ -27,7 +27,7 @@ export function createState(profile={},seed=null){
 }
 export function restoreState(raw){
  if(!raw||![1,2].includes(raw.schema)||!['moon','mars'].includes(raw.planet)||!raw.player||!raw.resources||!raw.inventory||!raw.flags)throw new Error('La partida no tiene un formato compatible.');
- if(raw.worldVersion!==undefined&&![1,2,3].includes(raw.worldVersion))throw new Error('La versión del mapa no es compatible.');const seeded=raw.worldVersion>=2;if(seeded&&(!Number.isInteger(raw.worldSeed)||raw.worldSeed<0||raw.worldSeed>0xffffffff))throw new Error('La semilla del mapa está dañada.');const s=createState(raw.profile,seeded?raw.worldSeed:null);s.worldVersion=raw.worldVersion||1;s.equipment.suited=raw.equipment?.suited!==false;s.equipment.pickaxe=clamp(Math.floor(Number(raw.equipment?.pickaxe)||1),1,4);s.planet=raw.planet;s.support=restoreSupport(raw.support);s.junior=juniorState(raw.junior||{training:3});
+ if(raw.worldVersion!==undefined&&![1,2,3,4].includes(raw.worldVersion))throw new Error('La versión del mapa no es compatible.');const seeded=raw.worldVersion>=2;if(seeded&&(!Number.isInteger(raw.worldSeed)||raw.worldSeed<0||raw.worldSeed>0xffffffff))throw new Error('La semilla del mapa está dañada.');const s=createState(raw.profile,seeded?raw.worldSeed:null);s.worldVersion=raw.worldVersion||1;s.equipment.suited=raw.equipment?.suited!==false;s.equipment.pickaxe=clamp(Math.floor(Number(raw.equipment?.pickaxe)||1),1,4);s.planet=raw.planet;s.support=restoreSupport(raw.support);s.junior=juniorState(raw.junior||{training:3});
  for(const key of Object.keys(s.resources)){if(!Number.isFinite(raw.resources[key]))throw new Error('Recursos dañados.');s.resources[key]=clamp(raw.resources[key],0,100);}
  for(const key of Object.keys(s.inventory))s.inventory[key]=clamp(Math.floor(Number(raw.inventory[key])||0),0,999);
  for(const key of Object.keys(s.flags))s.flags[key]=raw.flags[key]===true;

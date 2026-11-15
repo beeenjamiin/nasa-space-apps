@@ -1,3 +1,4 @@
+import {generation4Surface,generation4Cave} from './terrain-generation.js';
 import {materialForBlock,isPlacedBlock,validSavedBlock} from './block-materials.js';
 export const TILE=8,UNIT=16,WIDTH=640,HEIGHT=172,PLAYER_HEIGHT=34;
 export const BLOCK={AIR:0,DUST:1,ROCK:2,IRON:3,ICE:4,HULL:5,FLOOR:6};
@@ -5,7 +6,7 @@ export const LEGACY_SEEDS={moon:71423,mars:99127};
 export function freshWorldSeed(){const value=new Uint32Array(1);if(globalThis.crypto?.getRandomValues)globalThis.crypto.getRandomValues(value);else value[0]=(Date.now()^Math.floor(Math.random()*0xffffffff))>>>0;return value[0];}
 export function worldOptions(state,planet=state.planet){return{version:state.worldVersion>=2?state.worldVersion:1,seed:state.worldVersion>=2?(state.worldSeed^LEGACY_SEEDS[planet])>>>0:LEGACY_SEEDS[planet]};}
 export function hash(x,y,seed=1){let n=Math.imul(x+seed,374761393)^Math.imul(y+seed,668265263);n=Math.imul(n^(n>>>13),1274126177);return ((n^(n>>>16))>>>0)/4294967295;}
-export function surfaceAt(x,planet='moon',seed=LEGACY_SEEDS[planet],version=1){x/=2;
+export function surfaceAt(x,planet='moon',seed=LEGACY_SEEDS[planet],version=1){if(version===4)return generation4Surface(x,planet,seed,surfaceAt(x,planet,seed,3));x/=2;
  if(x>=12&&x<=51)return 66;
  if(version>=2){
   const phase=hash(1,3,seed)*Math.PI*2,rolling=Math.sin(x*.065+phase)*1.8+Math.sin(x*.19+phase*2)*.9;
@@ -21,10 +22,10 @@ export function surfaceAt(x,planet='moon',seed=LEGACY_SEEDS[planet],version=1){x
 }
 export class PixelWorld{
  constructor(planet='moon',edits={},options={}){
-  this.planet=planet;this.version=[2,3].includes(options.version)?options.version:1;this.seed=options.seed??LEGACY_SEEDS[planet];this.tiles=new Uint8Array(WIDTH*HEIGHT);this.edits={...edits};this.revision=0;this.dirtyChunks=new Set();this.placed=new Set();
+  this.planet=planet;this.version=[2,3,4].includes(options.version)?options.version:1;this.seed=options.seed??LEGACY_SEEDS[planet];this.tiles=new Uint8Array(WIDTH*HEIGHT);this.edits={...edits};this.revision=0;this.dirtyChunks=new Set();this.placed=new Set();
   const phase=this.version>=2?hash(2,7,this.seed)*Math.PI*2:0;
-  for(let x=0;x<WIDTH;x++){const top=this.surfaceAt(x);for(let y=top;y<HEIGHT;y++){let tile=y<top+6?BLOCK.DUST:BLOCK.ROCK;const n=hash(Math.floor(x/4),Math.floor(y/4),this.seed);if(this.version<3){if(y>top+8&&n>.84)tile=BLOCK.IRON;if(y>top+18&&n<.065)tile=BLOCK.ICE;}const cave=y>top+18&&y<HEIGHT-8&&Math.sin(x*.09+y*.065+phase)+Math.sin(x*.045-y*.14-phase*.7)>1.18;if(!cave)this.tiles[y*WIDTH+x]=tile;}}
-  if(this.version===3)growVeins(this);
+  for(let x=0;x<WIDTH;x++){const top=this.surfaceAt(x);for(let y=top;y<HEIGHT;y++){let tile=y<top+6?BLOCK.DUST:BLOCK.ROCK;const n=hash(Math.floor(x/4),Math.floor(y/4),this.seed);if(this.version<3){if(y>top+8&&n>.84)tile=BLOCK.IRON;if(y>top+18&&n<.065)tile=BLOCK.ICE;}const cave=this.version===4&&x>=220?generation4Cave(x,y,top,this.seed,phase):y>top+18&&y<HEIGHT-8&&Math.sin(x*.09+y*.065+phase)+Math.sin(x*.045-y*.14-phase*.7)>1.18;if(!cave)this.tiles[y*WIDTH+x]=tile;}}
+  if(this.version>=3)growVeins(this);
   // Accessible ore outcrops make the first expedition possible before deep mining.
   for(const mx of[56,57,58,83,84,103,104,125])for(let dx=0;dx<2;dx++){const x=mx*2+dx,top=this.surfaceAt(x);this.tiles[top*WIDTH+x]=BLOCK.IRON;this.tiles[(top+1)*WIDTH+x]=BLOCK.IRON;}
   for(let x=40;x<90;x++){this.tiles[50*WIDTH+x]=BLOCK.HULL;this.tiles[66*WIDTH+x]=BLOCK.FLOOR;}

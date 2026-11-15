@@ -36,4 +36,16 @@ export function treeSprite(variant=0){
  const im=c.getImageData(0,0,96,184);for(let i=3;i<im.data.length;i+=4)im.data[i]=im.data[i]>100?255:0;c.putImageData(im,0,0);
  cache.set(key,canvas);return canvas;
 }
-export function rockSprite(planet='moon',variant=0){return sprite('rock'+planet+variant,22,16,(x,y)=>{const dx=(x-11)/9,dy=(y-10)/5,edge=1+Math.sin(Math.atan2(dy,dx)*5+variant)*.16;if(y<4||y>14||dx*dx+dy*dy>edge)return null;const n=hash(Math.floor(x/3),Math.floor(y/3),variant+77),lit=(1-dx)*.3+(1-dy)*.2+n*.3;return planet==='moon'?(lit>.8?[153,159,158]:lit>.55?[106,117,129]:[66,77,94]):(lit>.8?[198,150,106]:lit>.55?[151,100,78]:[97,64,66]);});}
+export function rockSprite(planet='moon',variant=0){
+ const large=variant>=4,w=large?44:22,h=large?29:16;
+ return sprite('geological-rock-'+planet+'-'+variant,w,h,(x,y)=>{
+  const nx=(x-w*.5)/(w*.44),ny=(y-h*.64)/(h*.43),angle=Math.atan2(ny,nx),edge=1+Math.sin(angle*5+variant)*.13+Math.cos(angle*3-variant)*.09;
+  if(y<2||y>h-2||nx*nx+ny*ny>edge)return null;
+  const facet=hash(Math.floor(x/5),Math.floor(y/4),variant+77),light=-nx*.35-ny*.48+facet*.24;
+  const moon=[[42,52,65],[65,78,92],[91,106,118],[124,139,145],[166,176,175]],mars=[[80,49,44],[111,66,49],[151,94,60],[191,132,83],[226,177,117]];
+  let level=Math.max(0,Math.min(4,Math.floor((light+.55)*3)));
+  if(planet==='mars'&&(y+Math.floor(x*.12))%7===0)level=Math.max(0,level-1);
+  if((x+Math.floor(y/3)+variant*3)%19===0&&y>h*.3)level=Math.max(0,level-2);
+  return(planet==='moon'?moon:mars)[level];
+ });
+}
