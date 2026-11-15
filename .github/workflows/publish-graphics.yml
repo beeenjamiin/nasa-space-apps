@@ -1,0 +1,79 @@
+name: Publish verified 2D graphics edition
+
+on:
+  push:
+    tags:
+      - 'v0.7.*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: graphics-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Validate gameplay, saves, graphics and build
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p test-results
+          npm test | tee test-results/release-tests.txt
+          npm run build
+          npm run test:raster
+          node tools/graphics-qa.mjs
+      - name: Generate and verify the complete playable archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          node -e 'if ("v"+require("./package.json").version !== process.env.GITHUB_REF_NAME) process.exit(1)'
+          python3 tools/export-zip.py --output "dist/orbita-frontera-2d-${GITHUB_REF_NAME}.zip" --unit-log test-results/release-tests.txt
+          python3 tools/verify-export.py "dist/orbita-frontera-2d-${GITHUB_REF_NAME}.zip" --against-checkout
+      - name: Upload, verify download, then publish release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          archive="dist/orbita-frontera-2d-${GITHUB_REF_NAME}.zip"
+          # A published release is immutable in this workflow. A failed draft can be retried.
+          if gh release view "$GITHUB_REF_NAME" --json isDraft > existing-release.json 2>/dev/null; then
+            python3 -c 'import json; assert json.load(open("existing-release.json"))["isDraft"], "Release already published; refusing to overwrite it"'
+            gh release upload "$GITHUB_REF_NAME" "$archive" "${archive}.sha256" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "$archive" "${archive}.sha256" --verify-tag --draft --title "Órbita: Frontera ${GITHUB_REF_NAME} — Tierra, Luna y Marte" --notes-file docs/RELEASE-v0.7.0.md
+          fi
+          mkdir verified-download
+          gh release download "$GITHUB_REF_NAME" --pattern "$(basename "$archive")" --pattern "$(basename "$archive").sha256" --dir verified-download
+          (cd verified-download && sha256sum -c "$(basename "$archive").sha256")
+          cmp "$archive" "verified-download/$(basename "$archive")"
+          gh release edit "$GITHUB_REF_NAME" --draft=false --latest
+          gh release view "$GITHUB_REF_NAME" --json url,isDraft,assets,tagName,publishedAt > release-receipt.json
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib
+          path=pathlib.Path('release-receipt.json');receipt=json.loads(path.read_text())
+          archive=pathlib.Path('dist')/('orbita-frontera-2d-'+os.environ['GITHUB_REF_NAME']+'.zip')
+          assert receipt['isDraft'] is False and receipt['publishedAt']
+          assert any(asset['name']==archive.name and asset['size']==archive.stat().st_size for asset in receipt['assets'])
+          receipt['verifiedSourceCommit']=os.environ['GITHUB_SHA']
+          receipt['verifiedArchiveSHA256']=hashlib.sha256(archive.read_bytes()).hexdigest()
+          receipt['verification']='CRC and manifest checked before upload; release asset downloaded and byte-compared before publication.'
+          path.write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n')
+          PY
+          # A public-data Git receipt lets Git-only clients verify publication without API access.
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' tag -a "release-verified/${GITHUB_REF_NAME}" -F release-receipt.json
+          git push origin "refs/tags/release-verified/${GITHUB_REF_NAME}"
