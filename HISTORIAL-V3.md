@@ -1,6 +1,6 @@
 # Frontera 2D v3: bosque, animación y misión NASA
 
-Esta entrega conserva las partidas, la campaña Luna–Marte y el simulador 3D anterior. La prioridad visual es el bosque terrestre, la animación del astronauta y las partículas. La revisión del reto también incorpora alimentos y protección contra partículas solares en la aventura 2D.
+Esta entrega conserva las partidas y la campaña Luna–Marte. La prioridad visual es el bosque terrestre, la animación del astronauta y las partículas. La revisión del reto también incorpora alimentos y protección contra partículas solares en la aventura 2D.
 
 ## Referencias y dirección artística
 

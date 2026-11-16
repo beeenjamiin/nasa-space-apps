@@ -138,7 +138,7 @@ No se importan mapas SWIM, mediciones de estos lugares ni datos actuales. La ubi
 
 **Repositorio principal:** `npm ci`, `npm test`, `npm run build`, `npm run preview`; abrir `/pixel.html`.
 
-**ZIP v5 independiente:** el juego compilado abre sirviendo `index.html` con Live Server. Para editar y probar, usar Node 24 o posterior, ejecutar `npm install`, `npm test`, `npm run build`. Sus fuentes están en `src2d/`, los JSON en `data/` y las pruebas en `tests/`. Editar la estructura en `pixel.html`; el build genera `index.html` y el bundle. `npm run preview` sirve el paquete, o se puede seguir usando Live Server. El ZIP no contiene el simulador 3D ni credenciales; su enlace abre la versión publicada por separado.
+**ZIP v5 independiente:** el juego compilado abre sirviendo `index.html` con Live Server. Para editar y probar, usar Node 24 o posterior, ejecutar `npm install`, `npm test`, `npm run build`. Sus fuentes están en `src2d/`, los JSON en `data/` y las pruebas en `tests/`. Editar la estructura en `pixel.html`; el build genera `index.html` y el bundle. `npm run preview` sirve el paquete, o se puede seguir usando Live Server. El ZIP contiene la aventura completa y sus licencias.
 
 ## Verificación y problemas habituales
 

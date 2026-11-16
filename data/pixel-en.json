@@ -134,7 +134,6 @@
   "El aviso solar es un ejercicio programado con parámetros ficticios, no una alerta DONKI real. La exposición es un índice didáctico sin unidades de dosis. El refugio atenúa el riesgo; no reproduce un diseño de blindaje certificado. Cultivar consume semillas, agua y electricidad. Los resultados de plantas en OSDR fundamentan la relación con luz y agua, no la rapidez de la cosecha del juego.": "Solar warnings are scheduled drills, not live DONKI alerts. Exposure is a learning score, not a radiation dose. The shelter reduces risk but is not a certified shielding design. Growing food uses seeds, water and electricity. OSDR plant research supports the need for light and water, not the fast harvest time in this game.",
   "ARTE Y TIPOGRAFÍA": "ART AND FONTS",
   "Personaje Astro, Ragde (CC0), con paletas y poses aéreas articuladas originales. Fuente Silkscreen, Jason Kottke (SIL OFL). Mundo, composición, sonidos y lógica originales de este prototipo. No está afiliado ni avalado por NASA, Terraria o Minecraft.": "Astro character by Ragde (CC0), with original palettes and articulated air poses. Silkscreen font by Jason Kottke (SIL OFL). Original world, composition, sounds and logic. Not affiliated with or endorsed by NASA, Terraria or Minecraft.",
-  "Créditos y fuentes del proyecto completo ↗": "Project credits and sources ↗",
   "Activa JavaScript para jugar.": "Enable JavaScript to play.",
   "Aire para tu equipo": "Air for your team",
   "¿Qué necesitas para respirar en la Luna?": "What do you need to breathe on the Moon?",
@@ -669,5 +668,6 @@
   "Tu misión": "Your mission",
   "Ver más": "Read more",
   "Cerrar aviso": "Dismiss notice",
-  "CENTRO ESPACIAL": "SPACE CENTRE"
+  "CENTRO ESPACIAL": "SPACE CENTRE",
+  "Los créditos y fuentes de esta aventura están incluidos aquí y en los archivos de licencias.": "Credits and sources for this adventure are included here and in the license files."
 }
