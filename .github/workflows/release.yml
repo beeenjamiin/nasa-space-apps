@@ -42,8 +42,8 @@ jobs:
           set -euo pipefail
           archive="$RUNNER_TEMP/orbita-frontera-2d-${GITHUB_REF_NAME}.zip"
           gh release create "$GITHUB_REF_NAME" "$archive" "$archive.sha256" \
-            --verify-tag --title "Órbita: Frontera ${GITHUB_REF_NAME} — Entrenamiento" \
-            --notes-file docs/RELEASE-ENTRENAMIENTO.md
+            --verify-tag --title "Órbita: Frontera ${GITHUB_REF_NAME} — Experiencia junior" \
+            --notes-file docs/RELEASE-EXPERIENCIA.md
           gh release download "$GITHUB_REF_NAME" --pattern "$(basename "$archive")" \
             --dir "$RUNNER_TEMP/release-download"
           cmp "$archive" "$RUNNER_TEMP/release-download/$(basename "$archive")"

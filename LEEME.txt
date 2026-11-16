@@ -1,4 +1,4 @@
-ÓRBITA: FRONTERA / VERSIÓN 6 · ASTRONAUTAS JUNIOR
+ÓRBITA: FRONTERA / VERSIÓN 0.9 · EXPERIENCIA JUNIOR
 
 JUGAR: extrae el ZIP completo. Con Python 3, abre INICIAR.bat en Windows o ejecuta python3 INICIAR.py en Linux/macOS. También puedes usar Live Server. No abras con file://.
 
@@ -15,3 +15,5 @@ IDIOMA: Español/English en inicio y pausa. La preferencia y la partida se guard
 CIENCIA: enlaces NASA en la bitácora. Mapas, tiempos, recetas, tormentas y reservas son parámetros ficticios del juego, no telemetría ni alertas actuales.
 
 Consulta README.md, CAMBIOS-JUNIOR.md y LEEME-EXPORTACION.md. Licencias incluidas en assets/.
+
+NUEVO EN 0.9: zoom (rueda, botones y pellizco), sonidos originales CC0, iconos SVG propios, rótulos sin logotipos reales y mochila de escala equilibrada. Ver docs/EXPERIENCIA-0.9.md.

@@ -1,3 +1,4 @@
+import {launchPose,smoothstep} from './scene-motion.js';
 import {drawCapsule} from './spacecraft.js';
 import {drawAvatar} from './human.js';import {treeSprite,rockSprite} from './decor.js';import {planetSprite} from './planets.js';import {hash} from './world.js';
 import {drawEnginePlume,drawLandingDust,smokeSprite} from './effects.js';
@@ -37,14 +38,14 @@ export class Cinematic{
   if(type==='earth'){this.drawReturn(profile,time);return;}
   const r=this.r,c=r.ctx,w=r.width,h=r.height,{phase,t}=cinemaState(time,type);this.state=cinemaState(time,type);const earth=type!=='mars',shipX=w*.68;
   if(['walk','elevator','bridge','countdown'].includes(phase)||(phase==='launch'&&earth)){
-   const floor=this.earthLandscape(time),lift=phase==='launch'?t*t*(h+140):0,up=['bridge','countdown','launch'].includes(phase)?1:phase==='elevator'?t:0,arm=phase==='countdown'?1-t:phase==='launch'?0:1,{tx,carY,deck}=this.tower(floor,up,arm);
+   const launch=launchPose(phase==='launch'?t:0,h);c.save();if(phase==='launch')c.translate(launch.shake,launch.follow);const floor=this.earthLandscape(time),lift=phase==='launch'?launch.rise:0,up=['bridge','countdown','launch'].includes(phase)?1:phase==='elevator'?t:0,arm=phase==='countdown'?1-t:phase==='launch'?0:1,{tx,carY,deck}=this.tower(floor,up,arm);
    // Capsule deck is exactly aligned to the bridge; rocket proportions are artistic.
    c.save();c.translate(shipX,floor-lift);c.scale(1,1.7);r.launcher(0,0);c.restore();
    if(phase==='walk')drawAvatar(c,r.art,profile,tx-90+t*78,floor-34,{time,moving:true});
    if(phase==='elevator'){c.save();c.beginPath();c.rect(tx-10,carY+1,20,34);c.clip();drawAvatar(c,r.art,profile,tx-12,carY+2,{time});c.restore();}
    if(phase==='bridge')drawAvatar(c,r.art,profile,tx-12+t*(shipX-18-tx),deck-34,{time,moving:true});
-   if(phase==='countdown')r.label(String(Math.max(1,3-Math.floor(t*3))),shipX+35,deck-28,'#f7d38d',23);
-   if(phase==='launch')this.flame(shipX,floor-lift-12,time,1.5,false,floor-5);
+   if(phase==='countdown'){r.label(String(Math.max(1,3-Math.floor(t*3))),shipX+35,deck-28,'#f7d38d',23);if(t>.68)this.flame(shipX,floor-12,time,smoothstep((t-.68)/.32)*.45,false,floor-5);}
+   if(phase==='launch'){c.save();c.globalAlpha=launch.throttle*.23;const glow=c.createRadialGradient(shipX,floor-lift-8,1,shipX,floor-lift-8,36);glow.addColorStop(0,'#ffe1a2');glow.addColorStop(1,'rgba(255,161,78,0)');c.fillStyle=glow;c.fillRect(shipX-36,floor-lift-44,72,72);c.restore();this.flame(shipX,floor-lift-12,time,.3+launch.throttle*1.35,false,floor-5);}c.restore();
    r.label(phase==='walk'?'TIERRA / CENTRO DE LANZAMIENTO':phase==='elevator'?'ASCENSOR / ACCESO A LA TRIPULACIÓN':phase==='bridge'?'PASARELA / EMBARQUE':phase==='countdown'?'ESCOTILLA SELLADA / CUENTA ATRÁS':'DESPEGUE / PRIMERA ETAPA',w/2,24,'#fff0cd',9);return;
   }
   if(phase==='launch'){const floor=this.ground('moon',time),y=floor-t*t*(h+80);r.rocket(w/2,y);this.flame(w/2,y-7,time,.8,true);r.label('SALIDA LUNAR / NUEVA EXPEDICIÓN',w/2,25,'#e5dbbd',10);return;}
@@ -74,12 +75,6 @@ export class Cinematic{
  drawReturn(profile,time){
   const r=this.r,c=r.ctx,w=r.width,h=r.height,{phase,t}=cinemaState(time,'earth');this.state=cinemaState(time,'earth');
   if(phase==='launch'){const floor=this.ground('mars',time),y=floor-t*t*(h+90);r.rocket(w*.53,y);this.flame(w*.53,y-7,time,.8,true);if(t<.35)drawLandingDust(c,time,{x:w*.53,floor,planet:'mars',strength:1-t});r.label('SALIDA DE MARTE / CARGA CIENTÍFICA A BORDO',w/2,25,'#f1dab8',9);return;}
-  if(phase==='separation'){
-   this.stars(time);const cx=w*.52,cy=h*.4;
-   c.save();c.translate(cx-18-t*50,cy+75+t*70);c.rotate(-t*.22);r.launcher(0,0,true);c.restore();
-   this.capsule(cx+t*22,cy-t*20);rect(c,cx-10+t*22,cy+4-t*20,20,13,'#9aabac');rect(c,cx-7+t*22,cy+17-t*20,14,4,'#424b56');
-   r.label('SEPARACIÓN / CÁPSULA LIBRE · RUMBO A ÓRBITA',w/2,25,'#f2d9ab',9);return;
-  }
   if(phase==='orbit'){this.stars(time);const cx=w*.36,cy=h*.57,rad=Math.min(h*.25,72),angle=.3-t*2.6;c.drawImage(planetSprite('mars'),cx-rad,cy-rad,rad*2,rad*2);const x=cx+Math.cos(angle)*(rad+55),y=cy+Math.sin(angle)*(rad+55)*.7;this.capsule(x,y);r.label('ÓRBITA MARCIANA / PREPARANDO EL REGRESO',w/2,25,'#e6ddbe',9);return;}
   if(phase==='transfer'){this.stars(time);const from=30-t*13,to=23+t*30;c.drawImage(planetSprite('mars'),w*.12-from,h*.44-from,from*2,from*2);c.drawImage(planetSprite('earth'),w*.84-to,h*.43-to,to*2,to*2);this.capsule(w*(.27+t*.39),h*.57-Math.sin(t*Math.PI)*25);r.label('RUMBO A LA TIERRA / MESES COMPRIMIDOS',w/2,25,'#e6ddbe',9);return;}
   if(phase==='reentry'){const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#232a48');g.addColorStop(1,'#8eafc3');c.fillStyle=g;c.fillRect(0,0,w,h);const rad=h*.75;c.drawImage(planetSprite('earth'),w*.5-rad,h*.88,rad*2,rad*2);const x=w*.53,y=h*.3+t*h*.25;c.save();c.translate(x,y);c.rotate(-.35);for(let i=0;i<18;i++)rect(c,-15+hash(i,6)*28,4+i*2,1+i%3,2,i%3?'#e9ac61':'#f3d497');this.capsule(0,0);rect(c,-14,3,28,2,'#edb070');c.restore();r.label('TIERRA / REENTRADA Y ESCUDO TÉRMICO',w/2,25,'#f3e2bf',9);return;}

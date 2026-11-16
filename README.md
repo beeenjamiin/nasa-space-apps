@@ -1,4 +1,6 @@
-# Órbita: Frontera
+# Órbita: Frontera 0.9
+
+Consulta las mejoras de introducción, sonido, zoom e interfaz en [Experiencia 0.9](docs/EXPERIENCIA-0.9.md). Se conserva el entrenamiento jugable del release 0.8.
 
 Una aventura espacial 2D para niños de 7 a 12 años: crea tu astronauta, completa el entrenamiento, cuida una base lunar, prepara una expedición a Marte y trae tus descubrimientos a la Tierra. Interfaz en español e inglés, controles de teclado y joystick táctil.
 

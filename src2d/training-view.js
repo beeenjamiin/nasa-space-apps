@@ -1,3 +1,4 @@
+import {uiIcon} from './ui-icons.js';
 import {drawAvatar} from './human.js';
 import {TRAINING_FLOOR} from './training.js';
 import {translate} from './language.js';
@@ -44,7 +45,7 @@ export class TrainingUI{
  refresh(){
   const t=this.getSession();if(!t)return;const $=this.$,s=t.sim.s,text=(id,value)=>{const localized=translate(value);if($(id).textContent!==localized)$(id).textContent=localized;};
   text('training-heading',t.approved?'Entrenamiento aprobado':t.stage.title);
-  text('training-progress',(t.index+1)+' / 8');
+  if(!$('training-heading').querySelector('svg'))$('training-heading').prepend(uiIcon(t.approved?'star':({medical:'heart',psych:'hand',centrifuge:'settings',pool:'water',survival:'food',pressure:'helmet',navigation:'map',technical:'craft'})[t.stage.id]));text('training-progress',(t.index+1)+' / 8');
   text('training-instruction',t.approved?s.profile.name+', tu equipo está listo. La nave te espera.':t.stage.instruction);
   text('training-feedback',t.feedback);
   $('training-meter').value=t.passed?1:t.stage.id==='medical'?t.progress/2:t.stage.id==='centrifuge'?t.progress/4:t.step/3;
