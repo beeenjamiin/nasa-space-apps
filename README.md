@@ -101,3 +101,9 @@ El primer script recorre las ocho pruebas con controles reales (teclado en escri
 Sirve `index.html`, `pixel-game.js`, `css/`, `assets/` y `data/` juntos. GitHub Pages puede servir esta carpeta; conserva las rutas relativas. El ZIP de `descargas/` contiene el juego compilado y el código editable.
 
 Las etiquetas `v*` ejecutan `.github/workflows/release.yml`: pruebas, compilación, ZIP con manifiesto, publicación en GitHub Releases y descarga de comprobación. Solo después de comparar el archivo descargado se registra la etiqueta `release-verified/<versión>` con la URL y el SHA-256.
+
+## Actualización automática en GitHub Pages
+
+El flujo `.github/workflows/pages.yml` prueba y compila cada cambio de `main` y publica únicamente los archivos públicos del juego. Si las pruebas fallan, se conserva la última publicación correcta. También admite ejecución manual desde Actions.
+
+La activación inicial requiere que un administrador seleccione **Settings → Pages → Build and deployment → Source: GitHub Actions**. Después, la dirección esperada es `https://beeenjamiin.github.io/nasa-space-apps/`. Los cambios de otras ramas aparecerán al integrarlos en `main`. Los archivos JavaScript y CSS llevan versiones por contenido para evitar cargar código antiguo desde la caché.
